@@ -12,6 +12,7 @@
 #include "guild.h"
 #include "inbox.h"
 #include "protocolgame.h"
+#include "race.h" //LONNE ELEMENTO
 #include "town.h"
 #include "vocation.h"
 
@@ -232,6 +233,12 @@ class Player final : public Creature {
 		Vocation* getVocation() const {
 			return vocation;
 		}
+
+		//LONNE ELEMENTO 
+		bool setRace(uint16_t raceId);
+		Race* getPlayerRace() const { return race; }
+		uint16_t getRaceId() const { return race ? race->getId() : 0; }
+		bool hasRace(RaceType_t raceType) const;
 
 		OperatingSystem_t getOperatingSystem() const {
 			return operatingSystem;
@@ -723,7 +730,7 @@ class Player final : public Creature {
 				client->sendChannelEvent(channelId, playerName, channelEvent);
 			}
 		}
-		void sendAddCreature(const Creature* creature, const Position& pos, MagicEffectClasses magicEffect = CONST_ME_NONE) {
+		void sendCreatureAppear(const Creature* creature, const Position& pos, MagicEffectClasses magicEffect = CONST_ME_NONE) {
 			if (client) {
 				client->sendAddCreature(creature, pos, creature->getTile()->getClientIndexOfCreature(this, creature), magicEffect);
 			}
@@ -858,12 +865,15 @@ class Player final : public Creature {
 		}
 
 		//event methods
-		void onUpdateTileItem(const Tile* tile, const Position& pos, const Item* oldItem, const ItemType& oldType, const Item* newItem, const ItemType& newType) override;
-		void onRemoveTileItem(const Tile* tile, const Position& pos, const ItemType& iType, const Item* item) override;
+		void onUpdateTileItem(const Tile* tile, const Position& pos, const Item* oldItem,
+		                              const ItemType& oldType, const Item* newItem, const ItemType& newType) override;
+		void onRemoveTileItem(const Tile* tile, const Position& pos, const ItemType& iType,
+		                              const Item* item) override;
 
-		void onCreatureAppear(Creature* creature, bool isLogin, MagicEffectClasses magicEffect) override;
+		void onCreatureAppear(Creature* creature, bool isLogin) override;
 		void onRemoveCreature(Creature* creature, bool isLogout) override;
-		void onCreatureMove(Creature* creature, const Tile* newTile, const Position& newPos, const Tile* oldTile, const Position& oldPos, bool teleport) override;
+		void onCreatureMove(Creature* creature, const Tile* newTile, const Position& newPos,
+		                            const Tile* oldTile, const Position& oldPos, bool teleport) override;
 
 		void onAttackedCreatureDisappear(bool isLogout) override;
 		void onFollowCreatureDisappear(bool isLogout) override;
@@ -882,26 +892,6 @@ class Player final : public Creature {
 		void onRemoveInventoryItem(Item* item);
 
 
-		void sendVIPEntries() const {
-			if (client) {
-				client->sendVIPEntries();
-			}
-		}
-		void sendWorldLight(LightInfo lightInfo) const {
-			if (client) {
-				client->sendWorldLight(lightInfo);
-			}
-		}
-		void sendMapDescription() const {
-			if (client) {
-				client->sendMapDescription(position);
-			}
-		}
-		void sendPendingStateEntered() const {
-			if (client) {
-				client->sendPendingStateEntered();
-			}
-		}
 		void sendCancelMessage(const std::string& msg) const {
 			if (client) {
 				client->sendTextMessage(TextMessage(MESSAGE_STATUS_SMALL, msg));
@@ -1283,6 +1273,9 @@ class Player final : public Creature {
 		Town* town = nullptr;
 		Vocation* vocation = nullptr;
 		StoreInbox* storeInbox = nullptr;
+
+		//LONNE ELEMENTO 
+		Race* race = nullptr;
 
 		Inbox_ptr inbox = nullptr;
 		std::map<uint32_t, DepotChest_ptr> depotChests;

@@ -81,24 +81,6 @@ bool IOMap::loadMap(Map* map, const std::filesystem::path& fileName) {
 			return false;
 		}
 
-		if (root_header.majorVersionItems < 3) {
-			setLastErrorString("This map need to be upgraded by using the latest map editor version to be able to load correctly.");
-			return false;
-		}
-
-		if (root_header.majorVersionItems > Item::items.majorVersion) {
-			setLastErrorString("The map was saved with a different items.otb version, an upgraded items.otb is required.");
-			return false;
-		}
-
-		if (root_header.minorVersionItems < CLIENT_VERSION_810) {
-			setLastErrorString("This map needs to be updated.");
-			return false;
-		}
-
-		if (root_header.minorVersionItems > Item::items.minorVersion) {
-			std::cout << "[Warning - IOMap::loadMap] This map needs an updated items.otb." << std::endl;
-		}
 
 		std::cout << "> Map size: " << root_header.width << "x" << root_header.height << '.' << std::endl;
 		map->width = root_header.width;

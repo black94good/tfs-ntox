@@ -123,6 +123,9 @@ function Player.addManaSpent(...)
 	return ret
 end
 
+SKILL_NINJUTSU = SKILL_MAGLEVEL
+STAT_NINJUTSU = STAT_MAGICPOINTS
+
 -- Always pass the number through the isValidMoney function first before using the transferMoneyTo
 function Player.transferMoneyTo(self, target, amount)
 	if not target then
@@ -258,6 +261,34 @@ function Player.addMagicLevel(self, value)
 	return self:removeManaSpent(sum + self:getManaSpent())
 end
 
+function Player.getNinjutsu(self)
+	return self:getMagicLevel()
+end
+
+function Player.getBaseNinjutsu(self)
+	return self:getBaseMagicLevel()
+end
+
+function Player.getSpentNinjutsu(self)
+	return self:getManaSpent()
+end
+
+function Player.getRequiredNinjutsu(self, ninjutsuLevel)
+	return self:getVocation():getRequiredManaSpent(ninjutsuLevel)
+end
+
+function Player.addNinjutsuSpent(self, value)
+	return self:addManaSpent(value)
+end
+
+function Player.removeNinjutsuSpent(self, value, notify)
+	return self:removeManaSpent(value, notify)
+end
+
+function Player.addNinjutsu(self, value)
+	return self:addMagicLevel(value)
+end
+
 function Player.addSkillLevel(self, skillId, value)
 	local currentSkillLevel = self:getSkillLevel(skillId)
 	local sum = 0
@@ -283,7 +314,7 @@ end
 function Player.addSkill(self, skillId, value, round)
 	if skillId == SKILL_LEVEL then
 		return self:addLevel(value, round or false)
-	elseif skillId == SKILL_MAGLEVEL then
+	elseif skillId == SKILL_MAGLEVEL or skillId == SKILL_NINJUTSU then
 		return self:addMagicLevel(value)
 	end
 	return self:addSkillLevel(skillId, value)
@@ -295,6 +326,24 @@ function Player.getWeaponType(self)
 		return weapon:getType():getWeaponType()
 	end
 	return WEAPON_NONE
+end
+
+function Player.addItemByClientId(self, clientId, count, canDropOnMap, subType, slot)
+	local itemId = Game.getItemIdByClientId(clientId)
+	if itemId == 0 then
+		return nil
+	end
+
+	return self:addItem(itemId, count, canDropOnMap, subType, slot)
+end
+
+function Player.removeItemByClientId(self, clientId, count, subType, ignoreEquipped)
+	local itemId = Game.getItemIdByClientId(clientId)
+	if itemId == 0 then
+		return false
+	end
+
+	return self:removeItem(itemId, count, subType, ignoreEquipped)
 end
 
 function Player.getTotalMoney(self)

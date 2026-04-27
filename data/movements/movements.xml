@@ -940,11 +940,9 @@
 		<vocation name="Royal Paladin" showInDescription="0" />
 	</movevent>
 	<movevent event="DeEquip" itemid="12607" slot="armor" function="onDeEquipItem" />
-	<movevent event="Equip" itemid="12642" slot="armor" level="100" function="onEquipItem">
-		<vocation name="Knight" />
-		<vocation name="Elite Knight" showInDescription="0" />
+	<movevent event="Equip" itemid="11686" slot="armor" level="10" function="onEquipItem">
 	</movevent>
-	<movevent event="DeEquip" itemid="12642" slot="armor" function="onDeEquipItem" />
+	<movevent event="DeEquip" itemid="11686" slot="armor" function="onDeEquipItem" />
 	<movevent event="Equip" itemid="12643" slot="armor" level="100" function="onEquipItem">
 		<vocation name="Sorcerer" />
 		<vocation name="Master Sorcerer" showInDescription="0" />

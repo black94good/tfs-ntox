@@ -4,7 +4,7 @@
 #ifndef FS_CONST_H
 #define FS_CONST_H
 
-static constexpr int32_t NETWORKMESSAGE_MAXSIZE = 24590;
+static constexpr int32_t NETWORKMESSAGE_MAXSIZE = 65550; // lonne 24590 // tela
 
 enum MagicEffectClasses : uint8_t {
 	CONST_ME_NONE,
@@ -354,6 +354,8 @@ enum WeaponType_t : uint8_t {
 	WEAPON_DISTANCE,
 	WEAPON_WAND,
 	WEAPON_AMMO,
+	WEAPON_FIST,
+	WEAPON_SPELLBOOK,
 };
 
 enum Ammo_t : uint8_t {

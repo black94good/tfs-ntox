@@ -356,6 +356,11 @@ ReturnValue Actions::internalUseItem(Player* player, const Position& pos, uint8_
 	}
 
 	const ItemType& it = Item::items[item->getID()];
+	if (it.transformOnUse != 0) {
+		g_game.transformItem(item, it.transformOnUse);
+		return RETURNVALUE_NOERROR;
+	}
+
 	if (it.canReadText) {
 		if (it.canWriteText) {
 			player->setWriteItem(item, it.maxTextLen);

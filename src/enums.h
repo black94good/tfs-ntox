@@ -139,6 +139,13 @@ enum SpellGroup_t : uint8_t {
 	SPELLGROUP_HEALING = 2,
 	SPELLGROUP_SUPPORT = 3,
 	SPELLGROUP_SPECIAL = 4,
+
+	//LONNE ELEMENTO
+	SPELLGROUP_KATON = 5,
+	SPELLGROUP_RAITON = 6,
+	SPELLGROUP_DOTON = 7,
+	SPELLGROUP_SUITON = 8,
+	SPELLGROUP_FUUTON = 9,
 };
 
 enum SpellType_t : uint8_t {
@@ -163,9 +170,16 @@ enum RaceType_t : uint8_t {
 	RACE_UNDEAD,
 	RACE_FIRE,
 	RACE_ENERGY,
+
+	//LONNE ELEMENTO
+	RACE_KATON,
+	RACE_SUITON,
+	RACE_DOTON,
+	RACE_RAITON,
+	RACE_FUUTON,
 };
 
-enum CombatType_t : uint16_t {
+enum CombatType_t : uint32_t {
 	COMBAT_NONE = 0,
 
 	COMBAT_PHYSICALDAMAGE = 1 << 0,
@@ -181,7 +195,15 @@ enum CombatType_t : uint16_t {
 	COMBAT_HOLYDAMAGE = 1 << 10,
 	COMBAT_DEATHDAMAGE = 1 << 11,
 
-	COMBAT_COUNT = 12
+	//LONNE ELEMENTO
+	COMBAT_KATONDAMAGE    		= 1 << 12,
+	COMBAT_SUITONDAMAGE    		= 1 << 13,
+	COMBAT_DOTONDAMAGE    		= 1 << 14,
+	COMBAT_RAITONDAMAGE   		= 1 << 15,
+	COMBAT_FUUTONDAMAGE    		= 1 << 16,
+
+
+	COMBAT_COUNT = 17
 };
 
 enum CombatParam_t {

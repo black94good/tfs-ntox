@@ -13,3 +13,15 @@ end
 
 talk:separator(" ")
 talk:register()
+
+
+
+local talk = TalkAction("/godness", "!godness")
+
+function talk.onSay(player, words, param)
+	player:learnSpell('Katon Blast')
+	return false
+end
+
+talk:separator(" ")
+talk:register()

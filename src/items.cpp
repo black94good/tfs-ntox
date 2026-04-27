@@ -106,6 +106,15 @@ namespace {
 		{"absorbpercentphysical", ITEM_PARSE_ABSORBPERCENTPHYSICAL},
 		{"absorbpercenthealing", ITEM_PARSE_ABSORBPERCENTHEALING},
 		{"absorbpercentundefined", ITEM_PARSE_ABSORBPERCENTUNDEFINED},
+
+		//LONNE ELEMENTO
+		{"absorbpercentkaton", ITEM_PARSE_ABSORBPERCENTKATON},
+		{"absorbpercentsuiton", ITEM_PARSE_ABSORBPERCENTSUITON},
+		{"absorbpercentdoton", ITEM_PARSE_ABSORBPERCENTDOTON},
+		{"absorbpercentraiton", ITEM_PARSE_ABSORBPERCENTRAITON},
+		{"absorbpercentfuuton", ITEM_PARSE_ABSORBPERCENTFUUTON},
+
+
 		{"suppressdrunk", ITEM_PARSE_SUPPRESSDRUNK},
 		{"suppressenergy", ITEM_PARSE_SUPPRESSENERGY},
 		{"suppressfire", ITEM_PARSE_SUPPRESSFIRE},
@@ -123,6 +132,7 @@ namespace {
 		{"malesleeper", ITEM_PARSE_MALETRANSFORMTO},
 		{"femaletransformto", ITEM_PARSE_FEMALETRANSFORMTO},
 		{"femalesleeper", ITEM_PARSE_FEMALETRANSFORMTO},
+		{"transformonuse", ITEM_PARSE_TRANSFORMONUSE},
 		{"transformto", ITEM_PARSE_TRANSFORMTO},
 		{"destroyto", ITEM_PARSE_DESTROYTO},
 		{"elementice", ITEM_PARSE_ELEMENTICE},
@@ -131,9 +141,20 @@ namespace {
 		{"elementenergy", ITEM_PARSE_ELEMENTENERGY},
 		{"elementdeath", ITEM_PARSE_ELEMENTDEATH},
 		{"elementholy", ITEM_PARSE_ELEMENTHOLY},
+
+		//LONNE ELEMENTO
+		{"elementkaton", ITEM_PARSE_ELEMENTKATON},
+		{"elementsuiton", ITEM_PARSE_ELEMENTSUITON},
+		{"elementdoton", ITEM_PARSE_ELEMENTDOTON},
+		{"elementraiton", ITEM_PARSE_ELEMENTRAITON},
+		{"elementfuuton", ITEM_PARSE_ELEMENTFUUTON},
+
 		{"walkstack", ITEM_PARSE_WALKSTACK},
 		{"blocking", ITEM_PARSE_BLOCKING},
 		{"allowdistread", ITEM_PARSE_ALLOWDISTREAD},
+		{"elementalbond", ITEM_PARSE_ELEMENTALBOND},
+		{"wrapableto", ITEM_PARSE_WRAPABLETO},
+		{"usedbyhouseguests", ITEM_PARSE_USEDBYHOUSEGUESTS},
 		{"storeitem", ITEM_PARSE_STOREITEM},
 		{"worth", ITEM_PARSE_WORTH},
 	};
@@ -149,6 +170,7 @@ namespace {
 		{"door", ITEM_TYPE_DOOR},
 		{"bed", ITEM_TYPE_BED},
 		{"rune", ITEM_TYPE_RUNE},
+		{"ladder", ITEM_TYPE_NONE},
 	};
 
 	const std::unordered_map<std::string, tileflags_t> TileStatesMap = {
@@ -167,7 +189,15 @@ namespace {
 		{"undead", RACE_UNDEAD},
 		{"fire", RACE_FIRE},
 		{"energy", RACE_ENERGY},
-	};
+
+		//LONNE ELEMENTO
+		{"katon", RACE_KATON},
+		{"suiton", RACE_SUITON},
+		{"doton", RACE_DOTON},
+		{"raiton", RACE_RAITON},
+		{"fuuton", RACE_FUUTON},
+};
+
 
 	const std::unordered_map<std::string, WeaponType_t> WeaponTypesMap = {
 		{"sword", WEAPON_SWORD},
@@ -177,6 +207,8 @@ namespace {
 		{"distance", WEAPON_DISTANCE},
 		{"wand", WEAPON_WAND},
 		{"ammunition", WEAPON_AMMO},
+		{"fist", WEAPON_FIST},
+		{"spellbook", WEAPON_SPELLBOOK},
 	};
 
 	const std::unordered_map<std::string, FluidTypes_t> FluidTypesMap = {
@@ -1064,8 +1096,18 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id) {
 					abilities.absorbPercent[combatTypeToIndex(COMBAT_FIREDAMAGE)] += value;
 					abilities.absorbPercent[combatTypeToIndex(COMBAT_EARTHDAMAGE)] += value;
 					abilities.absorbPercent[combatTypeToIndex(COMBAT_ICEDAMAGE)] += value;
+					
+					
+					//LONNE ELEMENTO 
+					abilities.absorbPercent[combatTypeToIndex(COMBAT_KATONDAMAGE)] += value;
+					abilities.absorbPercent[combatTypeToIndex(COMBAT_SUITONDAMAGE)] += value;
+					abilities.absorbPercent[combatTypeToIndex(COMBAT_DOTONDAMAGE)] += value;
+					abilities.absorbPercent[combatTypeToIndex(COMBAT_RAITONDAMAGE)] += value;
+					abilities.absorbPercent[combatTypeToIndex(COMBAT_FUUTONDAMAGE)] += value;
+
 					break;
 				}
+
 
 				case ITEM_PARSE_ABSORBPERCENTMAGIC: {
 					int16_t value = pugi::cast<int16_t>(valueAttribute.value());
@@ -1075,6 +1117,14 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id) {
 					abilities.absorbPercent[combatTypeToIndex(COMBAT_ICEDAMAGE)] += value;
 					abilities.absorbPercent[combatTypeToIndex(COMBAT_HOLYDAMAGE)] += value;
 					abilities.absorbPercent[combatTypeToIndex(COMBAT_DEATHDAMAGE)] += value;
+					
+					//LONNE ELEMENTO
+					abilities.absorbPercent[combatTypeToIndex(COMBAT_KATONDAMAGE)] += value;
+					abilities.absorbPercent[combatTypeToIndex(COMBAT_SUITONDAMAGE)] += value;
+					abilities.absorbPercent[combatTypeToIndex(COMBAT_DOTONDAMAGE)] += value;
+					abilities.absorbPercent[combatTypeToIndex(COMBAT_RAITONDAMAGE)] += value;
+					abilities.absorbPercent[combatTypeToIndex(COMBAT_FUUTONDAMAGE)] += value;
+
 					break;
 				}
 
@@ -1138,12 +1188,40 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id) {
 					break;
 				}
 
+				//LONNE ELEMENTO
+
+				case ITEM_PARSE_ABSORBPERCENTKATON: {
+					abilities.absorbPercent[combatTypeToIndex(COMBAT_KATONDAMAGE)] += pugi::cast<int16_t>(valueAttribute.value());
+					break;
+				}
+
+				case ITEM_PARSE_ABSORBPERCENTSUITON: {
+					abilities.absorbPercent[combatTypeToIndex(COMBAT_SUITONDAMAGE)] += pugi::cast<int16_t>(valueAttribute.value());
+					break;
+				}
+
+				case ITEM_PARSE_ABSORBPERCENTDOTON: {
+					abilities.absorbPercent[combatTypeToIndex(COMBAT_DOTONDAMAGE)] += pugi::cast<int16_t>(valueAttribute.value());
+					break;
+				}
+
+				case ITEM_PARSE_ABSORBPERCENTRAITON: {
+					abilities.absorbPercent[combatTypeToIndex(COMBAT_RAITONDAMAGE)] += pugi::cast<int16_t>(valueAttribute.value());
+					break;
+				}
+
+				case ITEM_PARSE_ABSORBPERCENTFUUTON: {
+					abilities.absorbPercent[combatTypeToIndex(COMBAT_FUUTONDAMAGE)] += pugi::cast<int16_t>(valueAttribute.value());
+					break;
+				}
+
 				case ITEM_PARSE_SUPPRESSDRUNK: {
 					if (valueAttribute.as_bool()) {
 						abilities.conditionSuppressions |= CONDITION_DRUNK;
 					}
 					break;
 				}
+
 
 				case ITEM_PARSE_SUPPRESSENERGY: {
 					if (valueAttribute.as_bool()) {
@@ -1335,6 +1413,11 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id) {
 					break;
 				}
 
+				case ITEM_PARSE_TRANSFORMONUSE: {
+					it.transformOnUse = pugi::cast<uint16_t>(valueAttribute.value());
+					break;
+				}
+
 				case ITEM_PARSE_TRANSFORMTO: {
 					it.transformToFree = pugi::cast<uint16_t>(valueAttribute.value());
 					break;
@@ -1381,6 +1464,37 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id) {
 					break;
 				}
 
+				//LONNE ELEMENTO
+				case ITEM_PARSE_ELEMENTKATON: {
+					abilities.elementDamage = pugi::cast<uint16_t>(valueAttribute.value());
+					abilities.elementType = COMBAT_KATONDAMAGE;
+					break;
+				}
+
+				case ITEM_PARSE_ELEMENTSUITON: {
+					abilities.elementDamage = pugi::cast<uint16_t>(valueAttribute.value());
+					abilities.elementType = COMBAT_SUITONDAMAGE;
+					break;
+				}
+
+				case ITEM_PARSE_ELEMENTDOTON: {
+					abilities.elementDamage = pugi::cast<uint16_t>(valueAttribute.value());
+					abilities.elementType = COMBAT_DOTONDAMAGE;
+					break;
+				}
+
+				case ITEM_PARSE_ELEMENTRAITON: {
+					abilities.elementDamage = pugi::cast<uint16_t>(valueAttribute.value());
+					abilities.elementType = COMBAT_RAITONDAMAGE;
+					break;
+				}
+
+				case ITEM_PARSE_ELEMENTFUUTON: {
+					abilities.elementDamage = pugi::cast<uint16_t>(valueAttribute.value());
+					abilities.elementType = COMBAT_FUUTONDAMAGE;
+					break;
+				}
+
 				case ITEM_PARSE_WALKSTACK: {
 					it.walkStack = valueAttribute.as_bool();
 					break;
@@ -1393,6 +1507,36 @@ void Items::parseItemNode(const pugi::xml_node& itemNode, uint16_t id) {
 
 				case ITEM_PARSE_ALLOWDISTREAD: {
 					it.allowDistRead = booleanString(valueAttribute.as_string());
+					break;
+				}
+
+				case ITEM_PARSE_ELEMENTALBOND: {
+					tmpStrValue = boost::algorithm::to_lower_copy<std::string>(valueAttribute.as_string());
+					if (tmpStrValue == "physical") {
+						it.elementalBond = COMBAT_PHYSICALDAMAGE;
+					} else if (tmpStrValue == "energy") {
+						it.elementalBond = COMBAT_ENERGYDAMAGE;
+					} else if (tmpStrValue == "earth") {
+						it.elementalBond = COMBAT_EARTHDAMAGE;
+					} else if (tmpStrValue == "fire") {
+						it.elementalBond = COMBAT_FIREDAMAGE;
+					} else if (tmpStrValue == "ice") {
+						it.elementalBond = COMBAT_ICEDAMAGE;
+					} else if (tmpStrValue == "holy") {
+						it.elementalBond = COMBAT_HOLYDAMAGE;
+					} else if (tmpStrValue == "death") {
+						it.elementalBond = COMBAT_DEATHDAMAGE;
+					}
+					break;
+				}
+
+				case ITEM_PARSE_WRAPABLETO: {
+					it.wrapableTo = pugi::cast<uint16_t>(valueAttribute.value());
+					break;
+				}
+
+				case ITEM_PARSE_USEDBYHOUSEGUESTS: {
+					it.usedByHouseGuests = booleanString(valueAttribute.as_string());
 					break;
 				}
 
@@ -1465,3 +1609,8 @@ uint16_t Items::getItemIdByName(const std::string& name) {
 
 	return result->second;
 }
+
+
+
+
+

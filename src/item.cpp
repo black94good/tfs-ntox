@@ -935,7 +935,7 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance, const
 						s << " and";
 					}
 
-					s << " magic level " << it.runeMagLevel;
+					s << " ninjutsu " << it.runeMagLevel;
 				}
 
 				s << " or higher";
@@ -1058,7 +1058,7 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance, const
 					s << ", ";
 				}
 
-				s << "magic level " << std::showpos << it.abilities->stats[STAT_MAGICPOINTS] << std::noshowpos;
+				s << "ninjutsu " << std::showpos << it.abilities->stats[STAT_MAGICPOINTS] << std::noshowpos;
 			}
 
 			int16_t show = it.abilities->absorbPercent[0];
@@ -1201,7 +1201,7 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance, const
 					s << ", ";
 				}
 
-				s << "magic level " << std::showpos << it.abilities->stats[STAT_MAGICPOINTS] << std::noshowpos;
+				s << "ninjutsu " << std::showpos << it.abilities->stats[STAT_MAGICPOINTS] << std::noshowpos;
 			}
 
 			int16_t show = it.abilities->absorbPercent[0];
@@ -1479,7 +1479,7 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance, const
 				s << " of";
 			}
 
-			s << " magic level " << it.minReqMagicLevel << " or higher";
+			s << " ninjutsu " << it.minReqMagicLevel << " or higher";
 		}
 
 		s << '.';

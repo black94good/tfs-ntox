@@ -171,3 +171,35 @@ function Game.getPlayerAccountId(name)
 	end
 	return 0
 end
+
+function Game.getItemIdByClientId(clientId)
+	local itemType = Game.getItemTypeByClientId(clientId)
+	if not itemType then
+		return 0
+	end
+
+	local itemId = itemType:getId()
+	if not itemId then
+		return 0
+	end
+
+	return itemId
+end
+
+function Game.createItemByClientId(clientId, count, position)
+	local itemId = Game.getItemIdByClientId(clientId)
+	if itemId == 0 then
+		return nil
+	end
+
+	return Game.createItem(itemId, count, position)
+end
+
+function Game.createContainerByClientId(clientId, size, position)
+	local itemId = Game.getItemIdByClientId(clientId)
+	if itemId == 0 then
+		return nil
+	end
+
+	return Game.createContainer(itemId, size, position)
+end

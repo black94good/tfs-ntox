@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<npc name="Katon Sensei" script="Katon Sensei.lua" walkinterval="2000" floorchange="0">
+	<health now="100" max="100" />
+	<look type="134" head="114" body="113" legs="95" feet="114" addons="0" />
+	<parameters>
+		<parameter key="message_greet" value="Saudacoes, |PLAYERNAME|. Eu posso te ensinar o {Katon Blast}." />
+		<parameter key="message_farewell" value="Treine seu katon e volte quando quiser." />
+		<parameter key="message_walkaway" value="Continue seu treinamento." />
+	</parameters>
+</npc>

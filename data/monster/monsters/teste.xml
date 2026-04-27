@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<monster name="Katon Training Dummy" nameDescription="a katon training dummy" race="fire" experience="0" speed="0" manacost="0">
+	<health now="1000000" max="1000000" />
+	<look type="210" head="0" body="0" legs="0" feet="0" addons="0" />
+
+	<!-- Elemento do monstro para o sistema -->
+	<elements>
+    <element katonPercent="50"/>
+	</elements>
+	<flags>
+		<flag summonable="0" />
+		<flag attackable="1" />
+		<flag hostile="0" />
+		<flag convinceable="0" />
+		<flag pushable="0" />
+		<flag canpushitems="0" />
+		<flag canpushcreatures="0" />
+		<flag staticattack="0" />
+		<flag targetdistance="1" />
+		<flag runonhealth="0" />
+	</flags>
+
+	<attacks />
+	<defenses armor="100" defense="100" />
+	<loot />
+</monster>

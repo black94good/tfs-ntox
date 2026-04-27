@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<elements>
+	<!-- 
+		RACE SYSTEM - ELEMENT MODIFIERS
+		
+		defense: Fator de defesa contra o elemento (menor = mais resistente)
+		  - 0.7 = 30% menos dano recebido (forte contra)
+		  - 1.0 = dano normal
+		  - 1.3 = 30% mais dano recebido (fraco contra)
+		
+		attack: Fator de ataque com o elemento (maior = mais dano)
+		  - 0.7 = 30% menos dano causado
+		  - 1.0 = dano normal
+		  - 1.3 = 30% mais dano causado
+	-->
+	
+	<!-- NONE - Sem raça (neutro) -->
+	<race id="0" name="None" racetype="none" description="No elemental affinity" />
+
+		<!-- FIRE - Raça de Fogo -->
+	<race id="1" name="Fire" racetype="fire" description="Beings of flame and heat">
+		<!-- Forte contra: Ice, Earth -->
+		<element type="ice" defense="0.7" attack="1.3" />
+		<element type="earth" defense="0.9" attack="1.1" />
+		
+		<!-- Fraco contra: Fogo (imune), Água/Drown -->
+		<element type="fire" defense="0.5" attack="1.5" />
+		<element type="drown" defense="1.3" attack="0.7" />
+		
+		<!-- Neutro contra outros -->
+		<element type="energy" defense="1.0" attack="1.0" />
+		<element type="holy" defense="1.0" attack="1.0" />
+		<element type="death" defense="1.0" attack="1.0" />
+		<element type="physical" defense="1.0" attack="1.0" />
+	</race>
+	
+	<!-- VENOM (Earth) - Raça de Veneno/Terra -->
+	<race id="2" name="Venom" racetype="venom" description="Creatures of poison and earth">
+		<!-- Forte contra: Physical, Drown -->
+		<element type="physical" defense="0.8" attack="1.2" />
+		<element type="drown" defense="0.8" attack="1.2" />
+		
+		<!-- Fraco contra: Fire, Ice -->
+		<element type="fire" defense="1.3" attack="0.7" />
+		<element type="ice" defense="1.2" attack="0.8" />
+		
+		<!-- Resistente ao próprio elemento -->
+		<element type="earth" defense="0.6" attack="1.4" />
+		
+		<element type="energy" defense="1.0" attack="1.0" />
+		<element type="holy" defense="1.0" attack="1.0" />
+		<element type="death" defense="1.0" attack="1.0" />
+	</race>
+	
+	<!-- UNDEAD - Raça Morto-vivo -->
+	<race id="3" name="Undead" racetype="undead" description="Undead beings">
+		<!-- Forte contra: Death (imune), Physical -->
+		<element type="death" defense="0.5" attack="1.5" />
+		<element type="physical" defense="0.9" attack="1.1" />
+		
+		<!-- Fraco contra: Holy, Fire -->
+		<element type="holy" defense="1.4" attack="0.6" />
+		<element type="fire" defense="1.2" attack="0.8" />
+		
+		<element type="energy" defense="1.0" attack="1.0" />
+		<element type="ice" defense="1.0" attack="1.0" />
+		<element type="earth" defense="1.0" attack="1.0" />
+		<element type="drown" defense="0.7" attack="1.0" />
+	</race>
+	
+	<!-- ENERGY - Raça de Energia -->
+	<race id="4" name="Energy" racetype="energy" description="Beings of pure energy">
+		<!-- Forte contra: Drown, Physical -->
+		<element type="drown" defense="0.7" attack="1.3" />
+		<element type="physical" defense="0.9" attack="1.1" />
+		
+		<!-- Fraco contra: Earth -->
+		<element type="earth" defense="1.3" attack="0.7" />
+		
+		<!-- Resistente ao próprio elemento -->
+		<element type="energy" defense="0.6" attack="1.4" />
+		
+		<element type="fire" defense="1.0" attack="1.0" />
+		<element type="ice" defense="1.0" attack="1.0" />
+		<element type="holy" defense="1.0" attack="1.0" />
+		<element type="death" defense="1.0" attack="1.0" />
+	</race>
+	
+	<!-- BLOOD - Raça de Sangue (Physical) -->
+	<race id="5" name="Blood" racetype="blood" description="Warriors of flesh and blood">
+		<!-- Forte contra: Death, Earth -->
+		<element type="death" defense="0.8" attack="1.2" />
+		<element type="earth" defense="0.9" attack="1.1" />
+		
+		<!-- Fraco contra: Energy, Fire -->
+		<element type="energy" defense="1.2" attack="0.8" />
+		<element type="fire" defense="1.1" attack="0.9" />
+		
+		<!-- Bom com físico -->
+		<element type="physical" defense="0.8" attack="1.3" />
+		
+		<element type="ice" defense="1.0" attack="1.0" />
+		<element type="holy" defense="1.0" attack="1.0" />
+		<element type="drown" defense="1.0" attack="1.0" />
+	</race>
+
+	<race id="6" name="Katon" racetype="katon" description="Fire Release">
+		<!-- Katon vs Katon -->
+		<element type="katon" defense="1.0" attack="1.0" />
+		<!-- Forte contra Fuuton -->
+		<element type="fuuton" defense="0.85" attack="1.25" />
+		<!-- Fraco contra Suiton -->
+		<element type="suiton" defense="1.0" attack="1.0" />
+		<!-- Neutro contra Raiton -->
+		<element type="raiton" defense="1.0" attack="1.0" />
+		<!-- Neutro contra Doton -->
+		<element type="doton" defense="1.0" attack="1.0" />
+	</race>
+
+	<race id="7" name="Suiton" racetype="suiton" description="Water Release">
+		<!-- Suiton vs Suiton -->
+		<element type="suiton" defense="1.0" attack="1.0" />
+		<!-- Forte contra Katon -->
+		<element type="katon" defense="1.0" attack="1.0" />
+		<!-- Fraco contra Raiton -->
+		<element type="raiton" defense="1.3" attack="0.75" />
+		<!-- Neutro contra Fuuton -->
+		<element type="fuuton" defense="1.0" attack="1.0" />
+		<!-- Neutro contra Doton -->
+		<element type="doton" defense="1.0" attack="1.0" />
+	</race>
+
+	<race id="8" name="Doton" racetype="doton" description="Earth Release">
+		<!-- Doton vs Doton -->
+		<element type="doton" defense="0.85" attack="1.15" />
+		<!-- Forte contra Suiton -->
+		<element type="suiton" defense="0.85" attack="1.25" />
+		<!-- Fraco contra Raiton -->
+		<element type="raiton" defense="1.35" attack="0.7" />
+		<!-- Neutro contra Katon -->
+		<element type="katon" defense="1.0" attack="1.0" />
+		<!-- Neutro contra Fuuton -->
+		<element type="fuuton" defense="1.0" attack="1.0" />
+	</race>
+
+	<race id="9" name="Raiton" racetype="raiton" description="Lightning Release">
+		<!-- Raiton vs Raiton -->
+		<element type="raiton" defense="0.9" attack="1.2" />
+		<!-- Forte contra Doton -->
+		<element type="doton" defense="0.8" attack="1.3" />
+		<!-- Fraco contra Fuuton -->
+		<element type="fuuton" defense="1.3" attack="0.75" />
+		<!-- Neutro contra Katon -->
+		<element type="katon" defense="1.0" attack="1.0" />
+		<!-- Neutro contra Suiton -->
+		<element type="suiton" defense="1.0" attack="1.0" />
+	</race>
+
+	<race id="10" name="Fuuton" racetype="fuuton" description="Wind Release">
+		<!-- Fuuton vs Fuuton -->
+		<element type="fuuton" defense="0.9" attack="1.2" />
+		<!-- Forte contra Raiton -->
+		<element type="raiton" defense="0.8" attack="1.3" />
+		<!-- Fraco contra Katon -->
+		<element type="katon" defense="1.35" attack="0.7" />
+		<!-- Neutro contra Suiton -->
+		<element type="suiton" defense="1.0" attack="1.0" />
+		<!-- Neutro contra Doton -->
+		<element type="doton" defense="1.0" attack="1.0" />
+	</race>
+
+</elements>

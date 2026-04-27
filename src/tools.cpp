@@ -442,6 +442,13 @@ CombatTypeNames combatTypeNames = {
 	{COMBAT_ICEDAMAGE, 		"ice"},
 	{COMBAT_HOLYDAMAGE, 		"holy"},
 	{COMBAT_DEATHDAMAGE, 		"death"},
+
+	//LONNE ELEMENTO
+	{COMBAT_KATONDAMAGE, 		"katon"},
+	{COMBAT_SUITONDAMAGE, 		"suiton"},
+	{COMBAT_DOTONDAMAGE, 		"doton"},
+	{COMBAT_RAITONDAMAGE, 		"raiton"},
+	{COMBAT_FUUTONDAMAGE, 		"fuuton"},
 };
 
 AmmoTypeNames ammoTypeNames = {
@@ -583,7 +590,7 @@ std::string getSkillName(uint8_t skillid) {
 			return "fishing";
 
 		case SKILL_MAGLEVEL:
-			return "magic level";
+			return "ninjutsu";
 
 		case SKILL_LEVEL:
 			return "level";
@@ -661,6 +668,8 @@ std::string getWeaponName(WeaponType_t weaponType) {
 		case WEAPON_DISTANCE: return "distance";
 		case WEAPON_WAND: return "wand";
 		case WEAPON_AMMO: return "ammunition";
+		case WEAPON_FIST: return "fist";
+		case WEAPON_SPELLBOOK: return "spellbook";
 		default: return std::string();
 	}
 }
@@ -691,6 +700,18 @@ size_t combatTypeToIndex(CombatType_t combatType) {
 			return 10;
 		case COMBAT_DEATHDAMAGE:
 			return 11;
+		//LONNE ELEMENTO
+		case COMBAT_KATONDAMAGE:
+			return 12;
+		case COMBAT_SUITONDAMAGE:
+			return 13;
+		case COMBAT_DOTONDAMAGE:
+			return 14;
+		case COMBAT_RAITONDAMAGE:
+			return 15;
+		case COMBAT_FUUTONDAMAGE:
+			return 16;
+
 		default:
 			return 0;
 	}
@@ -865,7 +886,7 @@ const char* getReturnMessage(ReturnValue value) {
 			return "A player with this name is not online.";
 
 		case RETURNVALUE_NOTREQUIREDLEVELTOUSERUNE:
-			return "You do not have the required magic level to use this rune.";
+			return "You do not have the required ninjutsu to use this rune.";
 
 		case RETURNVALUE_YOUAREALREADYTRADING:
 			return "You are already trading. Finish this trade first.";
@@ -883,7 +904,7 @@ const char* getReturnMessage(ReturnValue value) {
 			return "Your level is too low.";
 
 		case RETURNVALUE_NOTENOUGHMAGICLEVEL:
-			return "You do not have enough magic level.";
+			return "You do not have enough ninjutsu.";
 
 		case RETURNVALUE_NOTENOUGHMANA:
 			return "You do not have enough mana.";
@@ -1022,3 +1043,4 @@ const std::vector<Direction>& getShuffleDirections() {
 	std::shuffle(dirList.begin(), dirList.end(), getRandomGenerator());
 	return dirList;
 }
+

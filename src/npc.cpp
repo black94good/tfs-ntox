@@ -229,9 +229,9 @@ void Npc::goToFollowCreature() {
 	updateFollowCreaturePath(fpp);
 }
 
-void Npc::onCreatureAppear(Creature* creature, bool, MagicEffectClasses) {
+void Npc::onCreatureAppear(Creature* creature, bool isLogin) {
+	Creature::onCreatureAppear(creature, isLogin);
 	if (creature == this) {
-		setLastPosition(getPosition());
 
 		SpectatorVec players;
 		g_game.map.getSpectators(players, getPosition(), true, true);

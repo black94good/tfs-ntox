@@ -61,7 +61,8 @@ void Weapons::loadDefaults() {
 		switch (it.weaponType) {
 			case WEAPON_AXE:
 			case WEAPON_SWORD:
-			case WEAPON_CLUB: {
+			case WEAPON_CLUB:
+			case WEAPON_FIST: {
 				WeaponMelee* weapon = new WeaponMelee(&scriptInterface);
 				weapon->configureWeapon(it);
 				weapons[i] = weapon;
@@ -531,6 +532,11 @@ bool WeaponMelee::getSkillType(const Player* player, const Item* item,
 			return true;
 		}
 
+		case WEAPON_FIST: {
+			skill = SKILL_FIST;
+			return true;
+		}
+
 		default:
 			break;
 	}
@@ -861,6 +867,18 @@ bool WeaponWand::configureEvent(const pugi::xml_node& node) {
 		params.combatType = COMBAT_DEATHDAMAGE;
 	} else if (tmpStrValue == "holy") {
 		params.combatType = COMBAT_HOLYDAMAGE;
+	//LONNE ELEMENTO
+	} else if (tmpStrValue == "katon") {
+		params.combatType = COMBAT_KATONDAMAGE;
+	} else if (tmpStrValue == "suiton") {
+		params.combatType = COMBAT_SUITONDAMAGE;
+	} else if (tmpStrValue == "doton") {
+		params.combatType = COMBAT_DOTONDAMAGE;
+	} else if (tmpStrValue == "raiton") {
+		params.combatType = COMBAT_RAITONDAMAGE;
+	} else if (tmpStrValue == "fuuton") {
+		params.combatType = COMBAT_FUUTONDAMAGE;
+
 	} else {
 		std::cout << "[Warning - WeaponWand::configureEvent] Type \"" << attr.as_string() << "\" does not exist." << std::endl;
 	}

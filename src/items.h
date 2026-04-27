@@ -128,6 +128,14 @@ enum ItemParseAttributes_t {
 	ITEM_PARSE_ABSORBPERCENTPHYSICAL,
 	ITEM_PARSE_ABSORBPERCENTHEALING,
 	ITEM_PARSE_ABSORBPERCENTUNDEFINED,
+
+	//LONNE ELEMENTO
+	ITEM_PARSE_ABSORBPERCENTKATON,
+	ITEM_PARSE_ABSORBPERCENTSUITON,
+	ITEM_PARSE_ABSORBPERCENTDOTON,
+	ITEM_PARSE_ABSORBPERCENTRAITON,
+	ITEM_PARSE_ABSORBPERCENTFUUTON,
+
 	ITEM_PARSE_SUPPRESSDRUNK,
 	ITEM_PARSE_SUPPRESSENERGY,
 	ITEM_PARSE_SUPPRESSFIRE,
@@ -143,6 +151,7 @@ enum ItemParseAttributes_t {
 	ITEM_PARSE_LEVELDOOR,
 	ITEM_PARSE_MALETRANSFORMTO,
 	ITEM_PARSE_FEMALETRANSFORMTO,
+	ITEM_PARSE_TRANSFORMONUSE,
 	ITEM_PARSE_TRANSFORMTO,
 	ITEM_PARSE_DESTROYTO,
 	ITEM_PARSE_ELEMENTICE,
@@ -151,9 +160,20 @@ enum ItemParseAttributes_t {
 	ITEM_PARSE_ELEMENTENERGY,
 	ITEM_PARSE_ELEMENTDEATH,
 	ITEM_PARSE_ELEMENTHOLY,
+
+	//LONNE ELEMENTO
+	ITEM_PARSE_ELEMENTKATON,
+	ITEM_PARSE_ELEMENTSUITON,
+	ITEM_PARSE_ELEMENTDOTON,
+	ITEM_PARSE_ELEMENTRAITON,
+	ITEM_PARSE_ELEMENTFUUTON,
+
 	ITEM_PARSE_WALKSTACK,
 	ITEM_PARSE_BLOCKING,
 	ITEM_PARSE_ALLOWDISTREAD,
+	ITEM_PARSE_ELEMENTALBOND,
+	ITEM_PARSE_WRAPABLETO,
+	ITEM_PARSE_USEDBYHOUSEGUESTS,
 	ITEM_PARSE_STOREITEM,
 	ITEM_PARSE_WORTH,
 };
@@ -317,8 +337,10 @@ class ItemType {
 		uint64_t worth = 0;
 
 		CombatType_t combatType = COMBAT_NONE;
+		CombatType_t elementalBond = COMBAT_NONE;
 
 		uint16_t transformToOnUse[2] = {0, 0};
+		uint16_t transformOnUse = 0;
 		uint16_t transformToFree = 0;
 		uint16_t destroyTo = 0;
 		uint16_t maxTextLen = 0;
@@ -329,6 +351,7 @@ class ItemType {
 		uint16_t slotPosition = SLOTP_HAND;
 		uint16_t speed = 0;
 		uint16_t wareId = 0;
+		uint16_t wrapableTo = 0;
 
 		MagicEffectClasses magicEffect = CONST_ME_NONE;
 		Direction bedPartnerDir = DIRECTION_NONE;
@@ -362,7 +385,7 @@ class ItemType {
 		bool pickupable = false;
 		bool rotatable = false;
 		bool useable = false;
-		bool moveable = false;
+		bool moveable = true;
 		bool alwaysOnTop = false;
 		bool canReadText = false;
 		bool canWriteText = false;
@@ -370,6 +393,7 @@ class ItemType {
 		bool isHorizontal = false;
 		bool isHangable = false;
 		bool allowDistRead = false;
+		bool usedByHouseGuests = false;
 		bool lookThrough = false;
 		bool stopTime = false;
 		bool showCount = true;
@@ -390,20 +414,18 @@ class Items {
 		bool reload();
 		void clear();
 
-		bool loadFromOtb(const std::string& file);
+		bool loadFromDat(std::string_view file); //LONNE
 
 		const ItemType& operator[](size_t id) const {
 			return getItemType(id);
 		}
+		bool hasItemType(size_t id) const;
 		const ItemType& getItemType(size_t id) const;
+		const ItemType& getNetworkItemType(size_t id) const;
 		ItemType& getItemType(size_t id);
 		const ItemType& getItemIdByClientId(uint16_t spriteId) const;
 
 		uint16_t getItemIdByName(const std::string& name);
-
-		uint32_t majorVersion = 0;
-		uint32_t minorVersion = 0;
-		uint32_t buildNumber = 0;
 
 		bool loadFromXml();
 		void parseItemNode(const pugi::xml_node& itemNode, uint16_t id);
@@ -423,35 +445,9 @@ class Items {
 	private:
 		std::vector<ItemType> items;
 		InventoryVector inventory;
-		class ClientIdToServerIdMap {
-			public:
-				ClientIdToServerIdMap() {
-					vec.reserve(30000);
-				}
-
-				void emplace(uint16_t clientId, uint16_t serverId) {
-					if (clientId >= vec.size()) {
-						vec.resize(clientId + 1, 0);
-					}
-					if (vec[clientId] == 0) {
-						vec[clientId] = serverId;
-					}
-				}
-
-				uint16_t getServerId(uint16_t clientId) const {
-					uint16_t serverId = 0;
-					if (clientId < vec.size()) {
-						serverId = vec[clientId];
-					}
-					return serverId;
-				}
-
-				void clear() {
-					vec.clear();
-				}
-			private:
-				std::vector<uint16_t> vec;
-		} clientIdToServerIdMap;
+		
+	//LONNE
+	bool unserializeDatItem(ItemType& itemType, const uint8_t* buf, size_t& pos, size_t bufSize, bool extendedSprites);
 };
 
 #endif // FS_ITEMS_H

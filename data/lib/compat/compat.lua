@@ -463,8 +463,11 @@ getPlayerNameDescription = getPlayerName
 function getPlayerFreeCap(cid) local p = Player(cid) return p and (p:getFreeCapacity() / 100) or false end
 function getPlayerPosition(cid) local p = Player(cid) return p and p:getPosition() or false end
 function getPlayerMagLevel(cid) local p = Player(cid) return p and p:getMagicLevel() or false end
+function getPlayerNinjutsu(cid) local p = Player(cid) return p and p:getMagicLevel() or false end
 function getPlayerSpentMana(cid) local p = Player(cid) return p and p:getManaSpent() or false end
+function getPlayerSpentNinjutsu(cid) local p = Player(cid) return p and p:getManaSpent() or false end
 function getPlayerRequiredMana(cid, magicLevel) local p = Player(cid) return p and p:getVocation():getRequiredManaSpent(magicLevel) or false end
+function getPlayerRequiredNinjutsu(cid, ninjutsuLevel) local p = Player(cid) return p and p:getVocation():getRequiredManaSpent(ninjutsuLevel) or false end
 function getPlayerRequiredSkillTries(cid, skillId) local p = Player(cid) return p and p:getVocation():getRequiredSkillTries(skillId) or false end
 function getPlayerAccess(cid)
 	local player = Player(cid)
@@ -723,6 +726,7 @@ function getPlayerAccountManager() debugPrint("Deprecated function.") return tru
 function doPlayerSetExperienceRate() debugPrint("Deprecated function, use Player:onGainExperience event instead.") return true end
 function doPlayerSetSkillLevel(cid, skillId, value, ...) local p = Player(cid) return p and p:addSkill(skillId, value, ...) end
 function doPlayerSetMagicLevel(cid, value) local p = Player(cid) return p and p:addMagicLevel(value) end
+function doPlayerSetNinjutsu(cid, value) local p = Player(cid) return p and p:addMagicLevel(value) end
 function doPlayerAddLevel(cid, amount, round) local p = Player(cid) return p and p:addLevel(amount, round) end
 function doPlayerAddExp(cid, exp, useMult, ...)
 	local player = Player(cid)
@@ -738,6 +742,8 @@ end
 doPlayerAddExperience = doPlayerAddExp
 function doPlayerAddManaSpent(cid, mana) local p = Player(cid) return p and p:addManaSpent(mana) or false end
 doPlayerAddSpentMana = doPlayerAddManaSpent
+function doPlayerAddNinjutsuSpent(cid, mana) local p = Player(cid) return p and p:addManaSpent(mana) or false end
+doPlayerAddSpentNinjutsu = doPlayerAddNinjutsuSpent
 function doPlayerAddSkillTry(cid, skillid, n) local p = Player(cid) return p and p:addSkillTries(skillid, n) or false end
 function doPlayerAddMana(cid, mana, ...) local p = Player(cid) return p and p:addMana(mana, ...) or false end
 function doPlayerJoinParty(cid, leaderId)
@@ -1527,7 +1533,7 @@ do
 		[SKILL_DISTANCE] = 'distance fighting',
 		[SKILL_SHIELD] = 'shielding',
 		[SKILL_FISHING] = 'fishing',
-		[SKILL_MAGLEVEL] = 'magic level',
+		[SKILL_MAGLEVEL] = 'ninjutsu',
 		[SKILL_LEVEL] = 'level'
 	}
 
@@ -1556,7 +1562,7 @@ do
 		[STAT_MAXHITPOINTS] = 'hitpoints',
 		[STAT_MAXMANAPOINTS] = 'mana',
 		[STAT_SOULPOINTS] = 'soul points',
-		[STAT_MAGICPOINTS] = 'magic level'
+		[STAT_MAGICPOINTS] = 'ninjutsu'
 	}
 
 	function getStatName(stat)

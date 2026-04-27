@@ -15,6 +15,7 @@
 #include "protocollogin.h"
 #include "protocolold.h"
 #include "protocolstatus.h"
+#include "race.h" //LONNE ELEMENTO
 #include "rsa.h"
 #include "scheduler.h"
 #include "script.h"
@@ -34,6 +35,7 @@ Scheduler g_scheduler;
 Game g_game;
 Monsters g_monsters;
 Vocations g_vocations;
+Races g_races; //LONNE ELEMENTO
 extern Scripts* g_scripts;
 
 std::mutex g_loaderLock;
@@ -139,14 +141,21 @@ namespace {
 			return;
 		}
 
-		// load item data
-		std::cout << ">> Loading items... ";
-		if (!Item::items.loadFromOtb("data/items/items.otb")) {
-			startupErrorMessage("Unable to load items (OTB)!");
+		//LONNE ELEMENTO 
+		// load elements
+		std::cout << ">> Loading elements" << std::endl;
+		if (!g_races.loadFromXml()) {
+			startupErrorMessage("Unable to load elements!");
 			return;
 		}
 
-		std::cout << fmt::format("OTB v{:d}.{:d}.{:d}", Item::items.majorVersion, Item::items.minorVersion, Item::items.buildNumber) << std::endl;
+
+		// load item data
+		std::cout << ">> Loading items... ";
+		if (!Item::items.loadFromDat(getString(ConfigManager::ASSETS_DAT_PATH))) {
+		startupErrorMessage("Unable to load items (DAT)! Copy 'Tibia.dat' from your client folder, rename it to 'assets.dat' and place it in 'data/items/'.");
+			return;
+		}
 
 		if (!Item::items.loadFromXml()) {
 			startupErrorMessage("Unable to load items (XML)!");

@@ -38,6 +38,7 @@ extern Chat* g_chat;
 extern TalkActions* g_talkActions;
 extern Spells* g_spells;
 extern Vocations g_vocations;
+extern Races g_races; //LONNE ELEMENTO
 extern GlobalEvents* g_globalEvents;
 extern CreatureEvents* g_creatureEvents;
 extern Monsters g_monsters;
@@ -52,7 +53,7 @@ Game::Game() {
 	offlineTrainingWindow.choices.emplace_back("Axe Fighting and Shielding", SKILL_AXE);
 	offlineTrainingWindow.choices.emplace_back("Club Fighting and Shielding", SKILL_CLUB);
 	offlineTrainingWindow.choices.emplace_back("Distance Fighting and Shielding", SKILL_DISTANCE);
-	offlineTrainingWindow.choices.emplace_back("Magic Level and Shielding", SKILL_MAGLEVEL);
+	offlineTrainingWindow.choices.emplace_back("Ninjutsu and Shielding", SKILL_MAGLEVEL);
 	offlineTrainingWindow.buttons.emplace_back("Okay", offlineTrainingWindow.defaultEnterButton);
 	offlineTrainingWindow.buttons.emplace_back("Cancel", offlineTrainingWindow.defaultEscapeButton);
 	offlineTrainingWindow.priority = true;
@@ -531,17 +532,23 @@ bool Game::placeCreature(Creature* creature, const Position& pos, bool extendedP
 		return false;
 	}
 
-	addCreatureCheck(creature);
-
 	const auto& position = creature->getPosition();
 	const auto& tile = creature->getTile();
 
 	SpectatorVec spectators;
 	map.getSpectators(spectators, position, true);
 	for (Creature* spectator : spectators) {
-		spectator->onCreatureAppear(creature, true, magicEffect);
+		if (Player* tmpPlayer = spectator->getPlayer()) {
+			tmpPlayer->sendCreatureAppear(creature, position, magicEffect);
+		}
 	}
 
+	for (Creature* spectator : spectators) {
+		spectator->onCreatureAppear(creature, true);
+	}
+
+	addCreatureCheck(creature);
+	
 	tile->postAddNotification(creature, nullptr, 0);
 
 	return true;
@@ -1750,7 +1757,7 @@ Item* searchForItem(Container* container, uint16_t itemId) {
 
 slots_t getSlotType(const ItemType& it) {
 	slots_t slot = CONST_SLOT_RIGHT;
-	if (it.weaponType != WeaponType_t::WEAPON_SHIELD) {
+	if (it.weaponType != WeaponType_t::WEAPON_SHIELD && it.weaponType != WeaponType_t::WEAPON_SPELLBOOK) {
 		int32_t slotPosition = it.slotPosition;
 
 		if (slotPosition & SLOTP_HEAD) {
@@ -3781,7 +3788,14 @@ bool Game::combatBlockHit(CombatDamage& damage, Creature* attacker, Creature* ta
 				case COMBAT_FIREDAMAGE:
 				case COMBAT_PHYSICALDAMAGE:
 				case COMBAT_ICEDAMAGE:
-				case COMBAT_DEATHDAMAGE: {
+				case COMBAT_DEATHDAMAGE: 
+				//LONNE ELEMENTO
+				case COMBAT_KATONDAMAGE:
+				case COMBAT_SUITONDAMAGE:
+				case COMBAT_DOTONDAMAGE:
+				case COMBAT_RAITONDAMAGE:
+				case COMBAT_FUUTONDAMAGE:
+				{
 					hitEffect = CONST_ME_BLOCKHIT;
 					break;
 				}
@@ -3862,11 +3876,33 @@ void Game::combatGetTypeInfo(CombatType_t combatType, Creature* target, TextColo
 					color = TEXTCOLOR_ELECTRICPURPLE;
 					effect = CONST_ME_ENERGYHIT;
 					break;
+					//LONNE ELEMENTO
+				case RACE_KATON:
+					color = TEXTCOLOR_DARKRED;
+					effect = CONST_ME_SMALLCLOUDS;
+					break;
+				case RACE_SUITON:
+					color = TEXTCOLOR_DARKRED;
+					effect = CONST_ME_SMALLCLOUDS;
+					break;
+				case RACE_DOTON:
+					color = TEXTCOLOR_DARKRED;
+					effect = CONST_ME_SMALLCLOUDS;
+					break;
+				case RACE_RAITON:
+					color = TEXTCOLOR_DARKRED;
+					effect = CONST_ME_SMALLCLOUDS;
+					break;
+				case RACE_FUUTON:
+					color = TEXTCOLOR_DARKRED;
+					effect = CONST_ME_SMALLCLOUDS;
+					break;
 				default:
 					color = TEXTCOLOR_NONE;
 					effect = CONST_ME_NONE;
 					break;
 			}
+
 
 			if (splash) {
 				internalAddItem(target->getTile(), splash, INDEX_WHEREEVER, FLAG_NOLIMIT);
@@ -3913,6 +3949,33 @@ void Game::combatGetTypeInfo(CombatType_t combatType, Creature* target, TextColo
 			effect = CONST_ME_SMALLCLOUDS;
 			break;
 		}
+		//LONNE ELEMENTO
+		case COMBAT_KATONDAMAGE: {
+			color = TEXTCOLOR_DARKRED;
+			effect = CONST_ME_SMALLCLOUDS;
+			break;
+		}
+		case COMBAT_SUITONDAMAGE: {
+			color = TEXTCOLOR_DARKRED;
+			effect = CONST_ME_SMALLCLOUDS;
+			break;
+		}
+		case COMBAT_DOTONDAMAGE: {
+			color = TEXTCOLOR_DARKRED;
+			effect = CONST_ME_SMALLCLOUDS;
+			break;
+		}
+		case COMBAT_RAITONDAMAGE: {
+			color = TEXTCOLOR_DARKRED;
+			effect = CONST_ME_SMALLCLOUDS;
+			break;
+		}
+		case COMBAT_FUUTONDAMAGE: {
+			color = TEXTCOLOR_DARKRED;
+			effect = CONST_ME_SMALLCLOUDS;
+			break;
+		}
+		
 		case COMBAT_LIFEDRAIN: {
 			color = TEXTCOLOR_RED;
 			effect = CONST_ME_MAGIC_RED;

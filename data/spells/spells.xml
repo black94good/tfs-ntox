@@ -1,5 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <spells>
+	
+	
+
+	<instant name="BetaTeste" words="beta" lvl="1" mana="10" group="fuuton" range="5" aggressive="1" needtarget="1" cooldown="0" needlearn="1" script="spell1.lua">   
+	</instant>
+
+	<instant name="BetaTest" words="betat" lvl="1" mana="10" group="fuuton" range="5" aggressive="1" needtarget="0" cooldown="0" needlearn="0" script="spell2.lua">   
+	</instant>
+
+	<instant name="BetaTes" words="betate" lvl="1" mana="10" group="fuuton" range="5" aggressive="1" needtarget="1" cooldown="0" needlearn="0" script="spell3.lua">   
+	</instant>
+
+	<instant name="BetaTe" words="betates" lvl="1" mana="10" group="fuuton" range="5" aggressive="0" needtarget="1" cooldown="0" needlearn="0" script="spell4.lua">   
+	</instant>
+
+	<instant name="BetaT" words="betatest" lvl="1" mana="10" group="fuuton" range="5" aggressive="0" needtarget="1" cooldown="0" needlearn="0" script="spell5.lua">   
+	</instant>
+
+	<instant name="Beta" words="betateste" lvl="1" mana="10" group="fuuton" range="5" aggressive="0" needtarget="1" cooldown="0" needlearn="0" script="spell6.lua">   
+	</instant>
+
+	<instant name="Bet" words="beti" lvl="1" mana="10" group="fuuton" range="5" aggressive="0" needtarget="1" cooldown="0" needlearn="0" script="spell7.lua">   
+	</instant>
+
+	<instant name="Be" words="bete" lvl="1" mana="10" group="fuuton" range="5" aggressive="0" needtarget="1" cooldown="0" needlearn="0" script="spell8.lua">   
+	</instant>
+
+
+
+	<!-- Elemental: Katon -->    
+	<instant group="katon" name="Katon Blast" words="katon blast" level="20" mana="60" premium="0" range="5" casterTargetOrDirection="1" blockwalls="1" cooldown="2000" groupcooldown="2000" needlearn="1" script="Katon Blast.lua">           
+	</instant>    
+	<!-- Elemental: Fuuton -->    
+	<instant group="attack" name="Fuuton Gust" words="fuuton gust" level="20" mana="60" premium="0" range="5" casterTargetOrDirection="1" blockwalls="1" cooldown="2000" groupcooldown="2000" needlearn="1" script="fuuton_gust.lua">          
+	</instant>
+
+
 	<!-- Attack Spells -->
 	<instant group="attack" spellid="62" name="Annihilation" words="exori gran ico" level="110" mana="300" premium="1" range="1" needtarget="1" needweapon="1" cooldown="30000" groupcooldown="4000" needlearn="0" script="attack/annihilation.lua">
 		<vocation name="Knight" />

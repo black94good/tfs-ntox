@@ -323,6 +323,7 @@ class LuaScriptInterface {
 		static int luaGameCreateNpc(lua_State* L);
 		static int luaGameCreateTile(lua_State* L);
 		static int luaGameCreateMonsterType(lua_State* L);
+		static int luaGameGetItemByClientId(lua_State* L); //LONNE TOOLTIP
 
 		static int luaGameStartEvent(lua_State* L);
 
@@ -688,6 +689,12 @@ class LuaScriptInterface {
 		static int luaPlayerGetSex(lua_State* L);
 		static int luaPlayerSetSex(lua_State* L);
 
+		//LONNE ELEMENTO
+		static int luaPlayerGetRace(lua_State* L);
+		static int luaPlayerSetRace(lua_State* L);
+		static int luaPlayerGetRaceId(lua_State* L);
+		static int luaPlayerHasRace(lua_State* L);
+		
 		static int luaPlayerGetTown(lua_State* L);
 		static int luaPlayerSetTown(lua_State* L);
 

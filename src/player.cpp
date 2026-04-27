@@ -6,6 +6,8 @@
 #include "player.h"
 
 #include "bed.h"
+#include "race.h" //LONNE ELEMENTO
+#include "spells.h" //LONNE ELEMENTO
 #include "chat.h"
 #include "combat.h"
 #include "configmanager.h"
@@ -27,16 +29,19 @@
 extern Game g_game;
 extern Chat* g_chat;
 extern Vocations g_vocations;
+extern Races g_races; //LONNE ELEMENTO
 extern MoveEvents* g_moveEvents;
 extern Weapons* g_weapons;
 extern CreatureEvents* g_creatureEvents;
+extern Spells* g_spells; //LONNE ELEEMNTO
 
 MuteCountMap Player::muteCountMap;
 
 uint32_t Player::playerAutoID = 0x10000000;
 
 Player::Player(ProtocolGame_ptr p) :
-	Creature(), lastPing(OTSYS_TIME()), lastPong(lastPing), client(std::move(p)), storeInbox(new StoreInbox(ITEM_STORE_INBOX)) {
+	Creature(), lastPing(OTSYS_TIME()), lastPong(lastPing), client(std::move(p)),
+	storeInbox(new StoreInbox(Item::items.getNetworkItemType(ITEM_STORE_INBOX).id)) {
 
 	storeInbox->setParent(this);
 	storeInbox->incrementReferenceCounter();
@@ -74,6 +79,25 @@ bool Player::setVocation(uint16_t vocId) {
 	g_game.changeSpeed(this, 0);
 
 	return true;
+}
+
+//LONNE ELEMENTO 
+bool Player::setRace(uint16_t raceId)
+{
+	Race* newRace = g_races.getRace(raceId);
+	if (!newRace) {
+		return false;
+	}
+	race = newRace;
+	return true;
+}
+
+bool Player::hasRace(RaceType_t raceType) const
+{
+	if (race && race->getRaceType() == raceType) {
+		return true;
+	}
+	return false;
 }
 
 bool Player::isPushable() const {
@@ -190,7 +214,7 @@ Item* Player::getWeapon(slots_t slot, bool ignoreAmmo) const {
 	}
 
 	WeaponType_t weaponType = item->getWeaponType();
-	if (weaponType == WEAPON_NONE || weaponType == WEAPON_SHIELD || weaponType == WEAPON_AMMO) {
+	if (weaponType == WEAPON_NONE || weaponType == WEAPON_SHIELD || weaponType == WEAPON_SPELLBOOK || weaponType == WEAPON_AMMO) {
 		return nullptr;
 	}
 
@@ -257,6 +281,11 @@ int32_t Player::getWeaponSkill(const Item* item) const {
 			break;
 		}
 
+		case WEAPON_FIST: {
+			attackSkill = getSkillLevel(SKILL_FIST);
+			break;
+		}
+
 		default: {
 			attackSkill = 0;
 			break;
@@ -292,7 +321,8 @@ void Player::getShieldAndWeapon(const Item*& shield, const Item*& weapon) const 
 			case WEAPON_NONE:
 				break;
 
-			case WEAPON_SHIELD: {
+			case WEAPON_SHIELD:
+			case WEAPON_SPELLBOOK: {
 				if (!shield || item->getDefense() > shield->getDefense()) {
 					shield = item;
 				}
@@ -977,15 +1007,10 @@ void Player::onRemoveTileItem(const Tile* tile, const Position& pos, const ItemT
 	}
 }
 
-void Player::onCreatureAppear(Creature* creature, bool isLogin, MagicEffectClasses magicEffect) {
-	if (creature != this) {
-		sendAddCreature(creature, creature->getPosition(), magicEffect);
-		return;
-	}
+void Player::onCreatureAppear(Creature* creature, bool isLogin) {
+	Creature::onCreatureAppear(creature, isLogin);
 
-	setLastPosition(getPosition());
-
-	if (isLogin) {
+	if (isLogin && creature == this) {
 		sendItems();
 
 		for (int32_t slot = CONST_SLOT_FIRST; slot <= CONST_SLOT_LAST; ++slot) {
@@ -1003,7 +1028,8 @@ void Player::onCreatureAppear(Creature* creature, bool isLogin, MagicEffectClass
 
 		updateRegeneration();
 
-		if (BedItem* bed = g_game.getBedBySleeper(guid)) {
+		BedItem* bed = g_game.getBedBySleeper(guid);
+		if (bed) {
 			bed->wakeUp(this);
 		}
 
@@ -1015,10 +1041,12 @@ void Player::onCreatureAppear(Creature* creature, bool isLogin, MagicEffectClass
 			guild->addMember(this);
 		}
 
-		int32_t offlineTime = 0;
+		int32_t offlineTime;
 		if (getLastLogout() != 0) {
-			// Cap offline time to 21 days to avoid integer overflow when converting to milliseconds
+			// Not counting more than 21 days to prevent overflow when multiplying with 1000 (for milliseconds).
 			offlineTime = std::min<int32_t>(time(nullptr) - getLastLogout(), 86400 * 21);
+			} else {
+			offlineTime = 0;
 		}
 
 		for (Condition* condition : getMuteConditions()) {
@@ -1032,32 +1060,7 @@ void Player::onCreatureAppear(Creature* creature, bool isLogin, MagicEffectClass
 
 		IOLoginData::updateOnlineStatus(guid, true);
 
-		if (!g_creatureEvents->playerLogin(this)) {
-			kickPlayer(true);
-			return;
-		}
-	}
-
-	sendPendingStateEntered();
-	sendEnterWorld();
-	sendMapDescription();
-
-	for (int i = CONST_SLOT_FIRST; i <= CONST_SLOT_LAST; ++i) {
-		auto slot = static_cast<slots_t>(i);
-		sendInventoryItem(slot, getInventoryItem(slot));
-	}
-	sendInventoryItem(CONST_SLOT_STORE_INBOX, getStoreInbox()->getItem());
-
-	sendStats();
-	sendSkills();
-	sendWorldLight(g_game.getWorldLightInfo());
-	sendCreatureLight(this);
-	sendVIPEntries();
-	sendBasicData();
-	sendIcons();
-
-	if (magicEffect != CONST_ME_NONE) {
-		sendMagicEffect(getPosition(), magicEffect);
+		
 	}
 }
 
@@ -1496,7 +1499,7 @@ void Player::addManaSpent(uint64_t amount) {
 	uint64_t currReqMana = vocation->getReqMana(magLevel);
 	uint64_t nextReqMana = vocation->getReqMana(magLevel + 1);
 	if (currReqMana >= nextReqMana) {
-		//player has reached max magic level
+		//player has reached max ninjutsu
 		return;
 	}
 
@@ -1512,7 +1515,7 @@ void Player::addManaSpent(uint64_t amount) {
 		magLevel++;
 		manaSpent = 0;
 
-		sendTextMessage(MESSAGE_EVENT_ADVANCE, fmt::format("You advanced to magic level {:d}.", magLevel));
+		sendTextMessage(MESSAGE_EVENT_ADVANCE, fmt::format("You advanced to ninjutsu {:d}.", magLevel));
 
 		g_creatureEvents->playerAdvance(this, SKILL_MAGLEVEL, magLevel - 1, magLevel);
 
@@ -1569,7 +1572,7 @@ void Player::removeManaSpent(uint64_t amount, bool notify/* = false*/) {
 	if (notify) {
 		bool sendUpdateStats = false;
 		if (oldLevel != magLevel) {
-			sendTextMessage(MESSAGE_EVENT_ADVANCE, fmt::format("You were downgraded to magic level {:d}.", magLevel));
+			sendTextMessage(MESSAGE_EVENT_ADVANCE, fmt::format("You were downgraded to ninjutsu {:d}.", magLevel));
 			sendUpdateStats = true;
 		}
 
@@ -1874,6 +1877,15 @@ BlockType_t Player::blockHit(Creature* attacker, CombatType_t combatType, int32_
 			}
 		}
 	}
+	//LONNE ELEMENTO 
+	if (Race* targetRace = getPlayerRace()) {
+		if (combatType != COMBAT_NONE && combatType != COMBAT_HEALING) {
+			float defenseFactor = targetRace->getDefenseFactor(combatType);
+			if (defenseFactor != 1.0f) {
+				damage = std::round(damage * defenseFactor);
+			}
+		}
+	}
 
 	if (damage <= 0) {
 		damage = 0;
@@ -1916,7 +1928,7 @@ void Player::death(Creature* lastHitCreature) {
 			}
 		}
 
-		//Magic level loss
+		//Ninjutsu loss
 		uint64_t sumMana = 0;
 		for (uint32_t i = 1; i <= magLevel; ++i) {
 			sumMana += vocation->getReqMana(i);
@@ -2281,7 +2293,7 @@ ReturnValue Player::queryAdd(int32_t index, const Thing& thing, uint32_t count, 
 		case CONST_SLOT_RIGHT: {
 			if (slotPosition & SLOTP_RIGHT) {
 				if (!getBoolean(ConfigManager::CLASSIC_EQUIPMENT_SLOTS)) {
-					if (item->getWeaponType() != WEAPON_SHIELD) {
+					if (item->getWeaponType() != WEAPON_SHIELD && item->getWeaponType() != WEAPON_SPELLBOOK) {
 						ret = RETURNVALUE_CANNOTBEDRESSED;
 					} else {
 						const Item* leftItem = inventory[CONST_SLOT_LEFT];
@@ -2309,11 +2321,11 @@ ReturnValue Player::queryAdd(int32_t index, const Thing& thing, uint32_t count, 
 						ret = RETURNVALUE_DROPTWOHANDEDITEM;
 					} else if (item == leftItem && count == item->getItemCount()) {
 						ret = RETURNVALUE_NOERROR;
-					} else if (leftType == WEAPON_SHIELD && type == WEAPON_SHIELD) {
+					} else if ((leftType == WEAPON_SHIELD || leftType == WEAPON_SPELLBOOK) && (type == WEAPON_SHIELD || type == WEAPON_SPELLBOOK)) {
 						ret = RETURNVALUE_CANONLYUSEONESHIELD;
 					} else if (leftType == WEAPON_NONE || type == WEAPON_NONE ||
-					           leftType == WEAPON_SHIELD || leftType == WEAPON_AMMO
-					           || type == WEAPON_SHIELD || type == WEAPON_AMMO) {
+					           leftType == WEAPON_SHIELD || leftType == WEAPON_SPELLBOOK || leftType == WEAPON_AMMO
+					           || type == WEAPON_SHIELD || type == WEAPON_SPELLBOOK || type == WEAPON_AMMO) {
 						ret = RETURNVALUE_NOERROR;
 					} else {
 						ret = RETURNVALUE_CANONLYUSEONEWEAPON;
@@ -2329,7 +2341,7 @@ ReturnValue Player::queryAdd(int32_t index, const Thing& thing, uint32_t count, 
 			if (slotPosition & SLOTP_LEFT) {
 				if (!getBoolean(ConfigManager::CLASSIC_EQUIPMENT_SLOTS)) {
 					WeaponType_t type = item->getWeaponType();
-					if (type == WEAPON_NONE || type == WEAPON_SHIELD || type == WEAPON_AMMO) {
+					if (type == WEAPON_NONE || type == WEAPON_SHIELD || type == WEAPON_SPELLBOOK || type == WEAPON_AMMO) {
 						ret = RETURNVALUE_CANNOTBEDRESSED;
 					} else if (inventory[CONST_SLOT_RIGHT] && (slotPosition & SLOTP_TWO_HAND)) {
 						ret = RETURNVALUE_BOTHHANDSNEEDTOBEFREE;
@@ -2350,11 +2362,11 @@ ReturnValue Player::queryAdd(int32_t index, const Thing& thing, uint32_t count, 
 						ret = RETURNVALUE_DROPTWOHANDEDITEM;
 					} else if (item == rightItem && count == item->getItemCount()) {
 						ret = RETURNVALUE_NOERROR;
-					} else if (rightType == WEAPON_SHIELD && type == WEAPON_SHIELD) {
+					} else if ((rightType == WEAPON_SHIELD || rightType == WEAPON_SPELLBOOK) && (type == WEAPON_SHIELD || type == WEAPON_SPELLBOOK)) {
 						ret = RETURNVALUE_CANONLYUSEONESHIELD;
 					} else if (rightType == WEAPON_NONE || type == WEAPON_NONE ||
-					           rightType == WEAPON_SHIELD || rightType == WEAPON_AMMO
-					           || type == WEAPON_SHIELD || type == WEAPON_AMMO) {
+					           rightType == WEAPON_SHIELD || rightType == WEAPON_SPELLBOOK || rightType == WEAPON_AMMO
+					           || type == WEAPON_SHIELD || type == WEAPON_SPELLBOOK || type == WEAPON_AMMO) {
 						ret = RETURNVALUE_NOERROR;
 					} else {
 						ret = RETURNVALUE_CANONLYUSEONEWEAPON;
@@ -2924,6 +2936,12 @@ void Player::postAddNotification(Thing* thing, const Thing* oldParent, int32_t i
 
 			for (const Container* container : containers) {
 				autoCloseContainers(container);
+			}
+
+			if (!oldParent && link == LINK_NEAR) {
+				if (!g_creatureEvents->playerLogin(this)) {
+					kickPlayer(true);
+				}
 			}
 		}
 	}
@@ -3797,10 +3815,60 @@ double Player::getLostPercent() const {
 	return lossPercent * (1 - (percentReduction / 100.)) / 100.;
 }
 
-void Player::learnInstantSpell(const std::string& spellName) {
-	if (!hasLearnedInstantSpell(spellName)) {
-		learnedInstantSpellList.push_front(spellName);
+//void Player::learnInstantSpell(const std::string& spellName) {
+	//if (!hasLearnedInstantSpell(spellName)) {
+	//	learnedInstantSpellList.push_front(spellName);
+	//}
+//} PADRAO...
+
+//LONNE ELEMENTO 
+void Player::learnInstantSpell(const std::string& spellName)
+{
+	if (hasLearnedInstantSpell(spellName)) {
+		return;
 	}
+
+	InstantSpell* spell = g_spells->getInstantSpellByName(spellName);
+	if (!spell) {
+		return;
+	}
+
+	SpellGroup_t group = spell->getGroup();
+	SpellGroup_t secondaryGroup = spell->getSecondaryGroup();
+
+	// Verifica se o player tem a race necessária (pode ser primary ou secondary)
+	if (group == SPELLGROUP_KATON || secondaryGroup == SPELLGROUP_KATON) {
+		if (!hasRace(RACE_KATON)) {
+			sendCancelMessage("Only players of Katon race can learn this spell.");
+			return;
+		}
+	}
+	if (group == SPELLGROUP_RAITON || secondaryGroup == SPELLGROUP_RAITON) {
+		if (!hasRace(RACE_RAITON)) {
+			sendCancelMessage("Only players of Raiton race can learn this spell.");
+			return;
+		}
+	}
+	if (group == SPELLGROUP_DOTON || secondaryGroup == SPELLGROUP_DOTON) {
+		if (!hasRace(RACE_DOTON)) {
+			sendCancelMessage("Only players of Doton race can learn this spell.");
+			return;
+		}
+	}
+	if (group == SPELLGROUP_SUITON || secondaryGroup == SPELLGROUP_SUITON) {
+		if (!hasRace(RACE_SUITON)) {
+			sendCancelMessage("Only players of Suiton race can learn this spell.");
+			return;
+		}
+	}
+	if (group == SPELLGROUP_FUUTON || secondaryGroup == SPELLGROUP_FUUTON) {
+		if (!hasRace(RACE_FUUTON)) {
+			sendCancelMessage("Only players of Fuuton race can learn this spell.");
+			return;
+		}
+	}
+
+	learnedInstantSpellList.push_front(spellName);
 }
 
 void Player::forgetInstantSpell(const std::string& spellName) {
@@ -4151,7 +4219,7 @@ bool Player::addOfflineTrainingTries(skills_t skill, uint64_t tries) {
 		manaSpent += tries;
 
 		if (magLevel != currMagLevel) {
-			sendTextMessage(MESSAGE_EVENT_ADVANCE, fmt::format("You advanced to magic level {:d}.", magLevel));
+			sendTextMessage(MESSAGE_EVENT_ADVANCE, fmt::format("You advanced to ninjutsu {:d}.", magLevel));
 		}
 
 		uint8_t newPercent;

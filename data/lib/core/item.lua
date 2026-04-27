@@ -2,6 +2,11 @@ function Item.getType(self)
 	return ItemType(self:getId())
 end
 
+function Item.getClientId(self)
+	local itemType = self:getType()
+	return itemType and itemType:getClientId() or 0
+end
+
 function Item.isContainer(self)
 	return false
 end
@@ -303,7 +308,7 @@ do
 		-- abilities (will be reused)
 		local abilities = itemType:getAbilities()
 
-		-- stats: hp/mp/soul/magic level
+		-- stats: hp/mp/soul/ninjutsu
 		do
 			local stats = {}
 			-- flat buffs
@@ -556,7 +561,7 @@ do
 						end
 
 						if hasMLvl then
-							levelInfo[#levelInfo + 1] = string.format("magic level %d", runeMagLevel)
+							levelInfo[#levelInfo + 1] = string.format("ninjutsu %d", runeMagLevel)
 						end
 
 						local levelStr = ""
@@ -593,7 +598,7 @@ do
 					end
 
 					if bit.band(wieldInfo, WIELDINFO_MAGLV) ~= 0 then
-						levelInfo[#levelInfo + 1] = string.format("magic level %d", itemType:getMinReqMagicLevel())
+						levelInfo[#levelInfo + 1] = string.format("ninjutsu %d", itemType:getMinReqMagicLevel())
 					end
 
 					if #levelInfo > 0 then

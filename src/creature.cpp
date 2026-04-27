@@ -300,6 +300,15 @@ void Creature::stopEventWalk() {
 	}
 }
 
+void Creature::onCreatureAppear(Creature* creature, bool isLogin) {
+	if (creature == this) {
+		if (isLogin) {
+			setLastPosition(getPosition());
+		}
+	}
+}
+
+
 void Creature::onRemoveCreature(Creature* creature, bool) {
 	onCreatureDisappear(creature, true);
 }

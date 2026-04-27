@@ -789,6 +789,22 @@ void Combat::doTargetCombat(Creature* caster, Creature* target, CombatDamage& da
 					damage.critical = true;
 				}
 			}
+			//LONNE ELEMENTO
+			if (Race* casterRace = casterPlayer->getPlayerRace()) {
+				if (damage.primary.type != COMBAT_NONE && damage.primary.type != COMBAT_HEALING) {
+					float attackFactor = casterRace->getAttackFactor(damage.primary.type);
+					if (attackFactor != 1.0f) {
+						damage.primary.value = std::round(damage.primary.value * attackFactor);
+					}
+				}
+				if (damage.secondary.type != COMBAT_NONE && damage.secondary.type != COMBAT_HEALING) {
+					float attackFactor = casterRace->getAttackFactor(damage.secondary.type);
+					if (attackFactor != 1.0f) {
+						damage.secondary.value = std::round(damage.secondary.value * attackFactor);
+					}
+				}
+			}
+
 		}
 
 		success = g_game.combatChangeHealth(caster, target, damage);

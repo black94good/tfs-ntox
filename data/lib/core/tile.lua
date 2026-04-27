@@ -14,6 +14,33 @@ function Tile.isContainer(self)
 	return false
 end
 
+function Tile.getItemByClientId(self, clientId)
+	local itemId = Game.getItemIdByClientId(clientId)
+	if itemId == 0 then
+		return nil
+	end
+
+	return self:getItemById(itemId)
+end
+
+function Tile.getItemCountByClientId(self, clientId)
+	local itemId = Game.getItemIdByClientId(clientId)
+	if itemId == 0 then
+		return 0
+	end
+
+	return self:getItemCountById(itemId)
+end
+
+function Tile.addItemByClientId(self, clientId, count, flags)
+	local itemId = Game.getItemIdByClientId(clientId)
+	if itemId == 0 then
+		return nil
+	end
+
+	return self:addItem(itemId, count, flags)
+end
+
 function Tile.relocateTo(self, toPosition)
 	if self:getPosition() == toPosition or not Tile(toPosition) then
 		return false

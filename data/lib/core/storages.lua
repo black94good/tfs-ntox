@@ -26,7 +26,6 @@ PlayerStorageKeys = {
 	nailCaseUseCount = 30031,
 	swampDigging = 30032,
 	insectoidCell = 30033,
-	-- empty: 30034
 	mutatedPumpkin = 30035,
 	achievementsBase = 300000,
 	achievementsCounter = 20000,

@@ -1258,6 +1258,14 @@ void LuaScriptInterface::registerFunctions() {
 	registerEnum(L, COMBAT_HOLYDAMAGE)
 	registerEnum(L, COMBAT_DEATHDAMAGE)
 
+	//LONNE ELEMENTO 
+	// register new combats
+	registerEnum(L, COMBAT_KATONDAMAGE)
+	registerEnum(L, COMBAT_SUITONDAMAGE)
+	registerEnum(L, COMBAT_DOTONDAMAGE)
+	registerEnum(L, COMBAT_RAITONDAMAGE)
+	registerEnum(L, COMBAT_FUUTONDAMAGE)
+
 	registerEnum(L, COMBAT_PARAM_TYPE)
 	registerEnum(L, COMBAT_PARAM_EFFECT)
 	registerEnum(L, COMBAT_PARAM_DISTANCEEFFECT)
@@ -1874,6 +1882,8 @@ void LuaScriptInterface::registerFunctions() {
 	registerEnum(L, WEAPON_DISTANCE)
 	registerEnum(L, WEAPON_WAND)
 	registerEnum(L, WEAPON_AMMO)
+	registerEnum(L, WEAPON_FIST)
+	registerEnum(L, WEAPON_SPELLBOOK)
 
 	registerEnum(L, WORLD_TYPE_NO_PVP)
 	registerEnum(L, WORLD_TYPE_PVP)
@@ -2112,6 +2122,9 @@ void LuaScriptInterface::registerFunctions() {
 	registerEnumIn(L, "configKeys", ConfigManager::DEFAULT_PRIORITY)
 	registerEnumIn(L, "configKeys", ConfigManager::MAP_AUTHOR)
 
+	//LONNE
+	registerEnumIn(L, "configKeys", ConfigManager::ASSETS_DAT_PATH)
+
 	registerEnumIn(L, "configKeys", ConfigManager::SQL_PORT)
 	registerEnumIn(L, "configKeys", ConfigManager::MAX_PLAYERS)
 	registerEnumIn(L, "configKeys", ConfigManager::PZ_LOCKED)
@@ -2214,6 +2227,7 @@ void LuaScriptInterface::registerFunctions() {
 	registerMethod(L, "Game", "createNpc", LuaScriptInterface::luaGameCreateNpc);
 	registerMethod(L, "Game", "createTile", LuaScriptInterface::luaGameCreateTile);
 	registerMethod(L, "Game", "createMonsterType", LuaScriptInterface::luaGameCreateMonsterType);
+	registerMethod(L, "Game", "getItemByClientId", LuaScriptInterface::luaGameGetItemByClientId); //LONNE TOOLTIP
 
 	registerMethod(L, "Game", "startEvent", LuaScriptInterface::luaGameStartEvent);
 
@@ -2588,6 +2602,12 @@ void LuaScriptInterface::registerFunctions() {
 
 	registerMethod(L, "Player", "getSex", LuaScriptInterface::luaPlayerGetSex);
 	registerMethod(L, "Player", "setSex", LuaScriptInterface::luaPlayerSetSex);
+
+	//LONNE ELEMENTO 
+	registerMethod(L, "Player", "getRace", LuaScriptInterface::luaPlayerGetRace);
+	registerMethod(L, "Player", "setRace", LuaScriptInterface::luaPlayerSetRace);
+	registerMethod(L, "Player", "getRaceId", LuaScriptInterface::luaPlayerGetRaceId);
+	registerMethod(L, "Player", "hasRace", LuaScriptInterface::luaPlayerHasRace);
 
 	registerMethod(L, "Player", "getTown", LuaScriptInterface::luaPlayerGetTown);
 	registerMethod(L, "Player", "setTown", LuaScriptInterface::luaPlayerSetTown);
@@ -4774,6 +4794,24 @@ int LuaScriptInterface::luaGameCreateMonsterType(lua_State* L) {
 	lua::setMetatable(L, -1, "MonsterType");
 	return 1;
 }
+
+int LuaScriptInterface::luaGameGetItemByClientId(lua_State* L)
+{
+	uint32_t clientId = lua::getNumber<uint32_t>(L, 1);
+
+	const ItemType& itemType = Item::items.getItemIdByClientId(clientId);
+
+	if (itemType.id != 0) {
+		lua::pushUserdata<const ItemType>(L, &itemType);
+		lua::setMetatable(L, -1, "ItemType");
+	}
+	else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+//lonne -- tooltip /\\/
 
 int LuaScriptInterface::luaGameStartEvent(lua_State* L) {
 	// Game.startEvent(event)
@@ -8955,6 +8993,54 @@ int LuaScriptInterface::luaPlayerGetVocation(lua_State* L) {
 	return 1;
 }
 
+//LONNE ELEMENTO
+int LuaScriptInterface::luaPlayerGetRace(lua_State* L)
+{
+	Player* player = lua::getUserdata<Player>(L, 1);
+	if (player) {
+		lua_pushnumber(L, player->getRace());
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int LuaScriptInterface::luaPlayerSetRace(lua_State* L)
+{
+	Player* player = lua::getUserdata<Player>(L, 1);
+	if (!player) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	uint16_t raceId = lua::getNumber<uint16_t>(L, 2);
+	lua::pushBoolean(L, player->setRace(raceId));
+	return 1;
+}
+
+int LuaScriptInterface::luaPlayerGetRaceId(lua_State* L)
+{
+	Player* player = lua::getUserdata<Player>(L, 1);
+	if (player) {
+		lua_pushnumber(L, player->getRaceId());
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+int LuaScriptInterface::luaPlayerHasRace(lua_State* L)
+{
+	Player* player = lua::getUserdata<Player>(L, 1);
+	if (!player) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	RaceType_t raceType = static_cast<RaceType_t>(lua::getNumber<int32_t>(L, 2));
+	lua::pushBoolean(L, player->hasRace(raceType));
+	return 1;
+}
+
 int LuaScriptInterface::luaPlayerSetVocation(lua_State* L) {
 	// player:setVocation(id or name or userdata)
 	Player* player = lua::getUserdata<Player>(L, 1);
@@ -10127,7 +10213,7 @@ int LuaScriptInterface::luaPlayerSetGhostMode(lua_State* L) {
 			if (enabled) {
 				spectatorPlayer->sendRemoveTileCreature(player, position, tile->getClientIndexOfCreature(spectatorPlayer, player));
 			} else {
-				spectatorPlayer->sendAddCreature(player, position, magicEffect);
+				spectatorPlayer->sendCreatureAppear(player, position, magicEffect);
 			}
 		} else {
 			if (isInvisible) {
@@ -14061,6 +14147,18 @@ int LuaScriptInterface::luaMonsterTypeRace(lua_State* L) {
 				monsterType->info.race = RACE_FIRE;
 			} else if (race == "energy") {
 				monsterType->info.race = RACE_ENERGY;
+			
+			//LONNE ELEMENTO
+			} else if (race == "katon") {
+				monsterType->info.race = RACE_KATON;
+			} else if (race == "suiton") {
+				monsterType->info.race = RACE_SUITON;
+			} else if (race == "doton") {
+				monsterType->info.race = RACE_DOTON;
+			} else if (race == "raiton") {
+				monsterType->info.race = RACE_RAITON;
+			} else if (race == "fuuton") {
+				monsterType->info.race = RACE_FUUTON;
 			} else {
 				std::cout << "[Warning - Monsters::loadMonster] Unknown race type " << race << "." << std::endl;
 				lua_pushnil(L);
@@ -16542,7 +16640,8 @@ int LuaScriptInterface::luaCreateWeapon(lua_State* L) {
 	switch (type) {
 		case WEAPON_SWORD:
 		case WEAPON_AXE:
-		case WEAPON_CLUB: {
+		case WEAPON_CLUB:
+		case WEAPON_FIST: {
 			WeaponMelee* weapon = new WeaponMelee(lua::getScriptEnv()->getScriptInterface());
 			if (weapon) {
 				lua::pushUserdata(L, weapon);
@@ -16791,6 +16890,19 @@ int LuaScriptInterface::luaWeaponElement(lua_State* L) {
 				weapon->params.combatType = COMBAT_DEATHDAMAGE;
 			} else if (tmpStrValue == "holy") {
 				weapon->params.combatType = COMBAT_HOLYDAMAGE;
+			
+			//LONNE ELEMENTO 
+			} else if (tmpStrValue == "katon") {
+				weapon->params.combatType = COMBAT_KATONDAMAGE;
+			} else if (tmpStrValue == "suiton") {
+				weapon->params.combatType = COMBAT_SUITONDAMAGE;
+			} else if (tmpStrValue == "doton") {
+				weapon->params.combatType = COMBAT_DOTONDAMAGE;
+			} else if (tmpStrValue == "raiton") {
+				weapon->params.combatType = COMBAT_RAITONDAMAGE;
+			} else if (tmpStrValue == "fuuton") {
+				weapon->params.combatType = COMBAT_FUUTONDAMAGE;
+			
 			} else {
 				std::cout << "[Warning - weapon:element] Type \"" << element << "\" does not exist." << std::endl;
 			}
@@ -17043,6 +17155,19 @@ int LuaScriptInterface::luaWeaponExtraElement(lua_State* L) {
 				it.abilities.get()->elementType = COMBAT_DEATHDAMAGE;
 			} else if (tmpStrValue == "holy") {
 				it.abilities.get()->elementType = COMBAT_HOLYDAMAGE;
+			
+			//LONNE ELEMENTO
+			} else if (tmpStrValue == "katon") {
+				it.abilities.get()->elementType = COMBAT_KATONDAMAGE;
+			} else if (tmpStrValue == "suiton") {
+				it.abilities.get()->elementType = COMBAT_SUITONDAMAGE;
+			} else if (tmpStrValue == "doton") {
+				it.abilities.get()->elementType = COMBAT_DOTONDAMAGE;
+			} else if (tmpStrValue == "raiton") {
+				it.abilities.get()->elementType = COMBAT_RAITONDAMAGE;
+			} else if (tmpStrValue == "fuuton") {
+				it.abilities.get()->elementType = COMBAT_FUUTONDAMAGE;
+
 			} else {
 				std::cout << "[Warning - weapon:extraElement] Type \"" << element << "\" does not exist." << std::endl;
 			}
@@ -17419,3 +17544,5 @@ void LuaEnvironment::executeTimerEvent(uint32_t eventIndex) {
 		luaL_unref(L, LUA_REGISTRYINDEX, parameter);
 	}
 }
+
+

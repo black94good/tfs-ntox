@@ -2,6 +2,33 @@ function Container.isContainer(self)
 	return true
 end
 
+function Container.getItemByClientId(self, clientId)
+	local itemId = Game.getItemIdByClientId(clientId)
+	if itemId == 0 then
+		return nil
+	end
+
+	return self:getItemById(itemId, true)
+end
+
+function Container.getItemCountByClientId(self, clientId)
+	local itemId = Game.getItemIdByClientId(clientId)
+	if itemId == 0 then
+		return 0
+	end
+
+	return self:getItemCountById(itemId)
+end
+
+function Container.addItemByClientId(self, clientId, count, index, flags)
+	local itemId = Game.getItemIdByClientId(clientId)
+	if itemId == 0 then
+		return nil
+	end
+
+	return self:addItem(itemId, count, index, flags)
+end
+
 function Container.createLootItem(self, item)
 	if self:getEmptySlots() == 0 then
 		return true

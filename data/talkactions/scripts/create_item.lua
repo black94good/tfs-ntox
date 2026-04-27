@@ -1,6 +1,45 @@
 local invalidIds = {1, 2, 3, 4, 5, 6, 7, 10, 11, 13, 14, 15, 19, 21, 26, 27, 28, 35, 43}
 local destinations = {"inbox", "storeinbox", "tile", "house", "depot"}
 
+local function resolveItemType(rawValue)
+	local value = rawValue and rawValue:trim() or ""
+	if value == "" then
+		return nil, nil
+	end
+
+	local lowerValue = value:lower()
+	local explicitClientId = lowerValue:match("^client:?%s*(%d+)$") or lowerValue:match("^cid:?%s*(%d+)$")
+	if explicitClientId then
+		local clientItemType = Game.getItemTypeByClientId(tonumber(explicitClientId))
+		if clientItemType and clientItemType:getId() ~= 0 then
+			return clientItemType, "clientId"
+		end
+		return nil, nil
+	end
+
+	local itemType = ItemType(value)
+	if itemType:getId() ~= 0 then
+		return itemType, "name"
+	end
+
+	local numericValue = tonumber(value)
+	if not numericValue then
+		return nil, nil
+	end
+
+	itemType = ItemType(numericValue)
+	if itemType:getId() ~= 0 then
+		return itemType, "serverId"
+	end
+
+	local clientItemType = Game.getItemTypeByClientId(numericValue)
+	if clientItemType and clientItemType:getId() ~= 0 then
+		return clientItemType, "clientId"
+	end
+
+	return nil, nil
+end
+
 local function getDestination(target, param, index)
 	if not param then
 		return target
@@ -63,18 +102,15 @@ end
 
 function onSay(player, words, param)
 	if not param:find(',') then
-		player:sendTextMessage(MESSAGE_INFO_DESCR, string.format("Usage: %s [item id or name], [count], [subtype or key number], [destination], [player name], [index].\nPossible destinations: %s", words, table.concat(destinations, ", ")))
+		player:sendTextMessage(MESSAGE_INFO_DESCR, string.format("Usage: %s [item name, serverId, clientId or client:1234], [count], [subtype or key number], [destination], [player name], [index].\nPossible destinations: %s", words, table.concat(destinations, ", ")))
 		return false
 	end
 
 	local split = param:splitTrimmed(",")
-	local itemType = ItemType(split[1])
-	if itemType:getId() == 0 then
-		itemType = ItemType(tonumber(split[1]))
-		if not tonumber(split[1]) or itemType:getId() == 0 then
-			player:sendCancelMessage("There is no item with that id or name.")
-			return false
-		end
+	local itemType, resolvedBy = resolveItemType(split[1])
+	if not itemType then
+		player:sendCancelMessage("There is no item with that name, serverId or clientId.")
+		return false
 	end
 
 	if table.contains(invalidIds, itemType:getId()) then
@@ -132,6 +168,8 @@ function onSay(player, words, param)
 
 	sendPlayerItemInformation(player, {
 		id = itemType:getId(),
+		clientid = itemType:getClientId(),
+		resolvedby = resolvedBy,
 		count = count,
 		subtype = subType,
 		keynumber = keyNumber,

@@ -70,6 +70,9 @@ namespace ConfigManager {
 		MAP_AUTHOR,
 		CONFIG_FILE,
 
+		//LONE
+		ASSETS_DAT_PATH,
+		
 		LAST_STRING_CONFIG /* this must be the last one */
 	};
 
