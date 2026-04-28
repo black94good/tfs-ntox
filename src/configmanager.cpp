@@ -1,4 +1,4 @@
-// Copyright 2023 The Forgotten Server Authors. All rights reserved.
+﻿// Copyright 2023 The Forgotten Server Authors. All rights reserved.
 // Use of this source code is governed by the GPL-2.0 License that can be found in the LICENSE file.
 
 #include "otpch.h"
@@ -250,6 +250,7 @@ bool ConfigManager::load() {
 	integer[RATE_LOOT] = getGlobalNumber(L, "rateLoot", 2);
 	integer[RATE_MAGIC] = getGlobalNumber(L, "rateMagic", 3);
 	integer[RATE_SPAWN] = getGlobalNumber(L, "rateSpawn", 1);
+	integer[MAX_LEVEL] = getGlobalNumber(L, "maxLevel", 300);
 	integer[HOUSE_PRICE] = getGlobalNumber(L, "housePriceEachSQM", 1000);
 	integer[KILLS_TO_RED] = getGlobalNumber(L, "killsToRedSkull", 3);
 	integer[KILLS_TO_BLACK] = getGlobalNumber(L, "killsToBlackSkull", 6);
@@ -370,3 +371,4 @@ bool ConfigManager::setBoolean(boolean_config_t what, bool value) {
 	boolean[what] = value;
 	return true;
 }
+

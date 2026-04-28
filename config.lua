@@ -1,4 +1,4 @@
--- Combat settings
+﻿-- Combat settings
 -- NOTE: valid values for worldType are: "pvp", "no-pvp" and "pvp-enforced"
 worldType = "pvp"
 hotkeyAimbotEnabled = true
@@ -133,25 +133,28 @@ serverSaveCleanMap = false
 serverSaveClose = false
 serverSaveShutdown = true
 
+-- Level cap
+maxLevel = 300
+
 -- Experience stages
 -- NOTE: to use a flat experience multiplier, set experienceStages to nil
 -- minlevel and multiplier are MANDATORY
 -- maxlevel is OPTIONAL, but is considered infinite by default
 -- to disable stages, create a stage with minlevel 1 and no maxlevel
 experienceStages = {
-	{ minlevel = 1, maxlevel = 8, multiplier = 7 },
-	{ minlevel = 9, maxlevel = 20, multiplier = 6 },
-	{ minlevel = 21, maxlevel = 50, multiplier = 5 },
+	{ minlevel = 1, maxlevel = 20, multiplier = 8 },
+	{ minlevel = 21, maxlevel = 50, multiplier = 6 },
 	{ minlevel = 51, maxlevel = 100, multiplier = 4 },
-	{ minlevel = 101, multiplier = 3 }
+	{ minlevel = 101, maxlevel = 150, multiplier = 3 },
+	{ minlevel = 151, maxlevel = 220, multiplier = 2 },
+	{ minlevel = 221, maxlevel = 300, multiplier = 1.5 }
 }
-
 -- Rates
 -- NOTE: rateExp is not used if you have enabled stages above
-rateExp = 5
-rateSkill = 3
+rateExp = 3
+rateSkill = 2
 rateLoot = 2
-rateMagic = 3
+rateMagic = 2
 rateSpawn = 1
 
 -- Monster Despawn Config
@@ -187,3 +190,5 @@ ownerName = ""
 ownerEmail = ""
 url = "https://otland.net/"
 location = "Sweden"
+
+

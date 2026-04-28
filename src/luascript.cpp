@@ -1,4 +1,4 @@
-// Copyright 2023 The Forgotten Server Authors. All rights reserved.
+﻿// Copyright 2023 The Forgotten Server Authors. All rights reserved.
 // Use of this source code is governed by the GPL-2.0 License that can be found in the LICENSE file.
 
 #include "otpch.h"
@@ -2137,6 +2137,7 @@ void LuaScriptInterface::registerFunctions() {
 	registerEnumIn(L, "configKeys", ConfigManager::RATE_LOOT)
 	registerEnumIn(L, "configKeys", ConfigManager::RATE_MAGIC)
 	registerEnumIn(L, "configKeys", ConfigManager::RATE_SPAWN)
+	registerEnumIn(L, "configKeys", ConfigManager::MAX_LEVEL)
 	registerEnumIn(L, "configKeys", ConfigManager::HOUSE_PRICE)
 	registerEnumIn(L, "configKeys", ConfigManager::KILLS_TO_RED)
 	registerEnumIn(L, "configKeys", ConfigManager::KILLS_TO_BLACK)
@@ -17544,5 +17545,6 @@ void LuaEnvironment::executeTimerEvent(uint32_t eventIndex) {
 		luaL_unref(L, LUA_REGISTRYINDEX, parameter);
 	}
 }
+
 
 

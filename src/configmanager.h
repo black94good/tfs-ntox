@@ -1,4 +1,4 @@
-// Copyright 2023 The Forgotten Server Authors. All rights reserved.
+﻿// Copyright 2023 The Forgotten Server Authors. All rights reserved.
 // Use of this source code is governed by the GPL-2.0 License that can be found in the LICENSE file.
 
 #ifndef FS_CONFIGMANAGER_H
@@ -88,6 +88,7 @@ namespace ConfigManager {
 		RATE_LOOT,
 		RATE_MAGIC,
 		RATE_SPAWN,
+		MAX_LEVEL,
 		HOUSE_PRICE,
 		KILLS_TO_RED,
 		KILLS_TO_BLACK,

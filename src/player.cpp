@@ -1,4 +1,4 @@
-// Copyright 2023 The Forgotten Server Authors. All rights reserved.
+﻿// Copyright 2023 The Forgotten Server Authors. All rights reserved.
 // Use of this source code is governed by the GPL-2.0 License that can be found in the LICENSE file.
 
 #include "otpch.h"
@@ -1584,6 +1584,13 @@ void Player::removeManaSpent(uint64_t amount, bool notify/* = false*/) {
 }
 
 void Player::addExperience(Creature* source, uint64_t exp, bool sendText/* = false*/) {
+	const uint32_t maxLevel = static_cast<uint32_t>(getNumber(ConfigManager::MAX_LEVEL));
+	if (maxLevel > 0 && level >= maxLevel) {
+		levelPercent = 0;
+		sendStats();
+		return;
+	}
+
 	uint64_t currLevelExp = Player::getExpForLevel(level);
 	uint64_t nextLevelExp = Player::getExpForLevel(level + 1);
 	uint64_t rawExp = exp;
@@ -1624,7 +1631,7 @@ void Player::addExperience(Creature* source, uint64_t exp, bool sendText/* = fal
 	}
 
 	uint32_t prevLevel = level;
-	while (experience >= nextLevelExp) {
+	while (experience >= nextLevelExp && (maxLevel == 0 || level < maxLevel)) {
 		++level;
 		healthMax += vocation->getHPGain();
 		health += vocation->getHPGain();
@@ -1638,6 +1645,11 @@ void Player::addExperience(Creature* source, uint64_t exp, bool sendText/* = fal
 			//player has reached max level
 			break;
 		}
+	}
+
+	if (maxLevel > 0 && level >= maxLevel) {
+		experience = Player::getExpForLevel(maxLevel);
+		levelPercent = 0;
 	}
 
 	if (prevLevel != level) {
@@ -3836,7 +3848,7 @@ void Player::learnInstantSpell(const std::string& spellName)
 	SpellGroup_t group = spell->getGroup();
 	SpellGroup_t secondaryGroup = spell->getSecondaryGroup();
 
-	// Verifica se o player tem a race necessária (pode ser primary ou secondary)
+	// Verifica se o player tem a race necessÃ¡ria (pode ser primary ou secondary)
 	if (group == SPELLGROUP_KATON || secondaryGroup == SPELLGROUP_KATON) {
 		if (!hasRace(RACE_KATON)) {
 			sendCancelMessage("Only players of Katon race can learn this spell.");
@@ -4466,3 +4478,4 @@ void Player::updateRegeneration() {
 		condition->setParam(CONDITION_PARAM_MANATICKS, vocation->getManaGainTicks() * 1000);
 	}
 }
+
