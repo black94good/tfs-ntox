@@ -1,4 +1,4 @@
-﻿// Copyright 2023 The Forgotten Server Authors. All rights reserved.
+// Copyright 2023 The Forgotten Server Authors. All rights reserved.
 // Use of this source code is governed by the GPL-2.0 License that can be found in the LICENSE file.
 
 #include "otpch.h"
@@ -3844,40 +3844,10 @@ void Player::learnInstantSpell(const std::string& spellName)
 	if (!spell) {
 		return;
 	}
-
-	SpellGroup_t group = spell->getGroup();
-	SpellGroup_t secondaryGroup = spell->getSecondaryGroup();
-
-	// Verifica se o player tem a race necessÃ¡ria (pode ser primary ou secondary)
-	if (group == SPELLGROUP_KATON || secondaryGroup == SPELLGROUP_KATON) {
-		if (!hasRace(RACE_KATON)) {
-			sendCancelMessage("Only players of Katon race can learn this spell.");
-			return;
-		}
-	}
-	if (group == SPELLGROUP_RAITON || secondaryGroup == SPELLGROUP_RAITON) {
-		if (!hasRace(RACE_RAITON)) {
-			sendCancelMessage("Only players of Raiton race can learn this spell.");
-			return;
-		}
-	}
-	if (group == SPELLGROUP_DOTON || secondaryGroup == SPELLGROUP_DOTON) {
-		if (!hasRace(RACE_DOTON)) {
-			sendCancelMessage("Only players of Doton race can learn this spell.");
-			return;
-		}
-	}
-	if (group == SPELLGROUP_SUITON || secondaryGroup == SPELLGROUP_SUITON) {
-		if (!hasRace(RACE_SUITON)) {
-			sendCancelMessage("Only players of Suiton race can learn this spell.");
-			return;
-		}
-	}
-	if (group == SPELLGROUP_FUUTON || secondaryGroup == SPELLGROUP_FUUTON) {
-		if (!hasRace(RACE_FUUTON)) {
-			sendCancelMessage("Only players of Fuuton race can learn this spell.");
-			return;
-		}
+	RaceType_t element = spell->getElement();
+	if (element != RACE_NONE && !hasRace(element)) {
+		sendCancelMessage("You do not have the required element to learn this jutsu.");
+		return;
 	}
 
 	learnedInstantSpellList.push_front(spellName);
@@ -4478,4 +4448,5 @@ void Player::updateRegeneration() {
 		condition->setParam(CONDITION_PARAM_MANATICKS, vocation->getManaGainTicks() * 1000);
 	}
 }
+
 

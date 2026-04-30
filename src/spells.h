@@ -208,6 +208,12 @@ class Spell : public BaseSpell {
 		void setSecondaryGroup(SpellGroup_t g) {
 			secondaryGroup = g;
 		}
+		RaceType_t getElement() const {
+			return element;
+		}
+		void setElement(RaceType_t e) {
+			element = e;
+		}
 
 		uint32_t getCooldown() const {
 			return cooldown;
@@ -295,6 +301,7 @@ class Spell : public BaseSpell {
 
 		SpellGroup_t group = SPELLGROUP_NONE;
 		SpellGroup_t secondaryGroup = SPELLGROUP_NONE;
+		RaceType_t element = RACE_NONE;
 
 		uint32_t cooldown = 1000;
 		uint32_t groupCooldown = 1000;

@@ -1,6 +1,39 @@
-﻿# Atualizacoes do Projeto NTOX
+# Atualizacoes do Projeto NTOX
 
 Este arquivo registra as mudancas feitas na base do servidor e na source durante o desenvolvimento do OT Naruto.
+
+## 2026-04-30 - Elemento separado do group das spells
+
+### Source C++
+
+- Atualizado `src/spells.h`.
+- A classe `Spell` agora tem um campo proprio `element`, separado do `group` principal.
+- Atualizado `src/spells.cpp`.
+- O XML das spells agora aceita `element="katon|raiton|doton|suiton|fuuton"`.
+- O `group` voltou a ser usado apenas para categoria principal. Para os novos jutsus NTOX, o padrao sera `attack` ou `support`; `healing` e `special` continuam aceitos por compatibilidade da base TFS.
+- A checagem para usar jutsu elemental agora olha o campo `element`, nao mais o `group` ou `secondarygroup`.
+- Atualizado `src/player.cpp`.
+- A checagem para aprender jutsu elemental agora tambem usa o campo `element`.
+
+### Datapack
+
+- Atualizado `data/spells/spells.xml`.
+- Jutsus de teste que usavam `group="fuuton"` foram movidos para `group="attack" element="fuuton"`.
+- `Katon Blast` foi movido para `group="attack" element="katon"`.
+- `Fuuton Gust` agora declara `element="fuuton"`.
+
+### Observacao
+
+- Os grupos elementais antigos ainda existem no enum da source por compatibilidade, mas nao devem mais ser usados em novas spells.
+- Daqui para frente, elemento deve ser configurado no atributo `element`.
+
+### Arquivos importantes para Git nesta etapa
+
+- `src/spells.h`
+- `src/spells.cpp`
+- `src/player.cpp`
+- `data/spells/spells.xml`
+- `README_ATUALIZACOES.md`
 
 ## 2026-04-27 - Vocation Shinobi e level maximo
 
@@ -109,3 +142,6 @@ Este arquivo registra as mudancas feitas na base do servidor e na source durante
 - `sql/33_ntox_shinobi_vocation.sql`
 - `README_ATUALIZACOES.md`
 - `RELATORIO_INICIAL_NTOX.md`
+
+
+

@@ -392,23 +392,30 @@ bool Spell::configureSpell(const pugi::xml_node& node) {
 			group = SPELLGROUP_SUPPORT;
 		} else if (tmpStr == "special" || tmpStr == "4") {
 			group = SPELLGROUP_SPECIAL;
-		//LONNE ELEMENTO 
-		} else if (tmpStr == "katon") {
-			group = SPELLGROUP_KATON;
-		} else if (tmpStr == "raiton") {
-			group = SPELLGROUP_RAITON;
-		} else if (tmpStr == "doton") {
-			group = SPELLGROUP_DOTON;
-		} else if (tmpStr == "suiton") {
-			group = SPELLGROUP_SUITON;
-		} else if (tmpStr == "fuuton") {
-			group = SPELLGROUP_FUUTON;
 		} else {
 			std::cout << "[Warning - Spell::configureSpell] Unknown group: " << attr.as_string() << std::endl;
 		}
 	}
 
 
+	if ((attr = node.attribute("element"))) {
+		std::string tmpStr = boost::algorithm::to_lower_copy<std::string>(attr.as_string());
+		if (tmpStr == "none" || tmpStr == "0") {
+			element = RACE_NONE;
+		} else if (tmpStr == "katon") {
+			element = RACE_KATON;
+		} else if (tmpStr == "raiton") {
+			element = RACE_RAITON;
+		} else if (tmpStr == "doton") {
+			element = RACE_DOTON;
+		} else if (tmpStr == "suiton") {
+			element = RACE_SUITON;
+		} else if (tmpStr == "fuuton") {
+			element = RACE_FUUTON;
+		} else {
+			std::cout << "[Warning - Spell::configureSpell] Unknown element: " << attr.as_string() << std::endl;
+		}
+	}
 	if ((attr = node.attribute("groupcooldown"))) {
 		groupCooldown = pugi::cast<uint32_t>(attr.value());
 	}
@@ -425,17 +432,6 @@ bool Spell::configureSpell(const pugi::xml_node& node) {
 			secondaryGroup = SPELLGROUP_SUPPORT;
 		} else if (tmpStr == "special" || tmpStr == "4") {
 			secondaryGroup = SPELLGROUP_SPECIAL;
-		//LONNE ELEMENTO 
-		} else if (tmpStr == "katon") {
-			secondaryGroup = SPELLGROUP_KATON;
-		} else if (tmpStr == "raiton") {
-			secondaryGroup = SPELLGROUP_RAITON;
-		} else if (tmpStr == "doton") {
-			secondaryGroup = SPELLGROUP_DOTON;
-		} else if (tmpStr == "suiton") {
-			secondaryGroup = SPELLGROUP_SUITON;
-		} else if (tmpStr == "fuuton") {
-			secondaryGroup = SPELLGROUP_FUUTON;
 		} else {
 			std::cout << "[Warning - Spell::configureSpell] Unknown secondarygroup: " << attr.as_string() << std::endl;
 		}
@@ -553,43 +549,10 @@ bool Spell::playerSpellCheck(Player* player) const
 	if (player->hasFlag(PlayerFlag_IgnoreSpellCheck)) {
 		return true;
 	}
-
-	//LONNE ELEMENTO
-	// Verifica se o player tem a race necessária (pode ser primary ou secondary)
-	if (group == SPELLGROUP_KATON || secondaryGroup == SPELLGROUP_KATON) {
-		if (!player->hasRace(RACE_KATON)) {
-			player->sendCancelMessage("Only players of Katon race can use this spell.");
-			g_game.addMagicEffect(player->getPosition(), CONST_ME_POFF);
-			return false;
-		}
-	}
-	if (group == SPELLGROUP_RAITON || secondaryGroup == SPELLGROUP_RAITON) {
-		if (!player->hasRace(RACE_RAITON)) {
-			player->sendCancelMessage("Only players of Raiton race can use this spell.");
-			g_game.addMagicEffect(player->getPosition(), CONST_ME_POFF);
-			return false;
-		}
-	}
-	if (group == SPELLGROUP_DOTON || secondaryGroup == SPELLGROUP_DOTON) {
-		if (!player->hasRace(RACE_DOTON)) {
-			player->sendCancelMessage("Only players of Doton race can use this spell.");
-			g_game.addMagicEffect(player->getPosition(), CONST_ME_POFF);
-			return false;
-		}
-	}
-	if (group == SPELLGROUP_SUITON || secondaryGroup == SPELLGROUP_SUITON) {
-		if (!player->hasRace(RACE_SUITON)) {
-			player->sendCancelMessage("Only players of Suiton race can use this spell.");
-			g_game.addMagicEffect(player->getPosition(), CONST_ME_POFF);
-			return false;
-		}
-	}
-	if (group == SPELLGROUP_FUUTON || secondaryGroup == SPELLGROUP_FUUTON) {
-		if (!player->hasRace(RACE_FUUTON)) {
-			player->sendCancelMessage("Only players of Fuuton race can use this spell.");
-			g_game.addMagicEffect(player->getPosition(), CONST_ME_POFF);
-			return false;
-		}
+	if (element != RACE_NONE && !player->hasRace(element)) {
+		player->sendCancelMessage("You do not have the required element to use this jutsu.");
+		g_game.addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		return false;
 	}
 
 	if (!enabled) {
@@ -1267,3 +1230,5 @@ bool RuneSpell::canUse(const Player* player) const {
 
 	return hasVocationSpellMap(player->getVocationId());
 }
+
+
