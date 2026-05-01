@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <spells>
+	<!-- NTOX clans -->
+	<instant group="support" name="Senju Healing" words="senju healing" level="10" mana="80" aggressive="0" cooldown="4000" groupcooldown="2000" needlearn="1" script="support/senju_healing.lua" />
+	<instant group="support" name="Uzumaki Seal" words="uzumaki seal" level="15" mana="90" aggressive="1" range="5" needtarget="1" blockwalls="1" cooldown="8000" groupcooldown="2000" needlearn="1" script="support/uzumaki_seal.lua" />
 	
 	
 
@@ -840,4 +843,5 @@
 	<instant name="dipthrah skill reducer" words="###51" aggressive="1" blockwalls="1" needtarget="0" needlearn="1" script="monster/dipthrah_skill_reducer.lua" />
 	<instant name="root branchy" words="###53" blockwalls="1" needtarget="1" needlearn="1" script="monster/root_branchy.lua" />
 </spells>
+
 

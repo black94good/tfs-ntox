@@ -46,8 +46,10 @@
 	<talkaction words="!kills" script="kills.lua" />
 	<talkaction words="!online;/online" script="online.lua" />
 	<talkaction words="!serverinfo" script="server_info.lua" />
+	<talkaction words="!clan" separator=" " script="ntox_clan.lua" />
 
 	<!-- test talkactions -->
 	<talkaction words="!z" separator=" " script="magic_effect.lua" />
 	<talkaction words="!x" separator=" " script="animation_effect.lua" />
 </talkactions>
+

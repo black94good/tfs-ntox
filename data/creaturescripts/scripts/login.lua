@@ -24,8 +24,13 @@ function onLogin(player)
 	-- Update client exp display
 	player:updateClientExpDisplay()
 
+	if NTOX_CLAN then
+		NTOX_CLAN.ensureClanRewards(player)
+	end
+
 	-- Events
 	player:registerEvent("PlayerDeath")
 	player:registerEvent("DropLoot")
 	return true
 end
+
